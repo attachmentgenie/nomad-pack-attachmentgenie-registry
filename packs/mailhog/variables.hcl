@@ -6,9 +6,9 @@ variable "job_name" {
 }
 
 variable "namespace" {
-  description = "The namespace where jobs will be deployed"
+  description = "The namespace where the job should be placed"
   type        = string
-  default     = ""
+  default     = "default"
 }
 
 variable "region" {
@@ -26,7 +26,13 @@ variable "datacenters" {
 variable "count" {
   description = "The number of app instances to deploy"
   type        = number
-  default     = 1
+  default     = 2
+}
+
+variable "message" {
+  description = "The message your application will render"
+  type        = string
+  default     = "Hello World!"
 }
 
 variable "register_consul_service" {
@@ -36,27 +42,22 @@ variable "register_consul_service" {
 }
 
 variable "consul_service_name" {
-  description = "The consul service name for the minio application"
+  description = "The consul service name for the mailhog application"
   type        = string
-  default     = "s3"
+  default     = "webapp"
 }
 
 variable "consul_service_tags" {
-  description = "The consul service name for the minio application"
+  description = "The consul service name for the mailhog application"
   type        = list(string)
-  default = []
-}
-
-variable "env_vars" {
-  description = "env vars to inject"
-  type = list(object({
-    key   = string
-    value = string
-  }))
-}
-
-variable "version_tag" {
-  description = "The docker image version. For options, see https://quay.io/repository/minio/minio"
-  type        = string
-  default     = "latest"
+  // defaults to integrate with Fabio or Traefik
+  // This routes at the root path "/", to route to this service from
+  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
+  // "traefik.http.routers.http.rule=Path(∫/∫)" to
+  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
+  default = [
+    "urlprefix-/",
+    "traefik.enable=true",
+    "traefik.http.routers.http.rule=Path(`/`)",
+  ]
 }
