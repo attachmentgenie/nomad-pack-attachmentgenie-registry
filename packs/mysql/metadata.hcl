@@ -1,17 +1,10 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://www.mysql.com/"
+  author = "oracle"
 }
 pack {
   name        = "mysql"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "MySQL is an open-source relational database management system."
+  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/mysql"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }

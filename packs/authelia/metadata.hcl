@@ -1,17 +1,10 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://www.authelia.com/"
+  author = "authelia"
 }
 pack {
   name        = "authelia"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "Authelia is an open-source authentication and authorization server and portal fulfilling the identity and access management."
+  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/authelia"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }

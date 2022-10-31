@@ -1,17 +1,10 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://joxit.dev/docker-registry-ui/"
+  author = "Jones Magloire"
 }
 pack {
   name        = "registry"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "The simplest and most complete UI for your private registry"
+  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/registry"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }
