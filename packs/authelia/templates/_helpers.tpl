@@ -1,23 +1,27 @@
 // allow nomad-pack to set the job name
-
 [[ define "job_name" ]]
-[[- if eq .hello_world.job_name "" -]]
+[[- if eq .my.job_name "" -]]
 [[- .nomad_pack.pack.name | quote -]]
 [[- else -]]
-[[- .hello_world.job_name | quote -]]
+[[- .my.job_name | quote -]]
 [[- end ]]
 [[- end ]]
+
+// only deploys to a namespace if specified
+[[ define "namespace" -]]
+[[- if not (eq .my.namespace "") -]]
+  namespace = [[ .my.namespace | quote]]
+[[- end -]]
+[[- end -]]
 
 // only deploys to a region if specified
-
 [[ define "region" -]]
-[[- if not (eq .hello_world.region "") -]]
-  region = [[ .hello_world.region | quote]]
+[[- if not (eq .my.region "") -]]
+  region = [[ .my.region | quote]]
 [[- end -]]
 [[- end -]]
 
 // Generic constraint
-
 [[ define "constraints" -]]
 [[ range $idx, $constraint := . ]]
   constraint {
@@ -36,7 +40,7 @@
       service {
         name = [[ $service.service_name | quote ]]
         port = [[ $service.service_port_label | quote ]]
-        tags = [[ $service.service_tags | toJson ]]
+        tags = [[ $service.service_tags | toStringList ]]
         [[- if gt (len $service.upstreams) 0 ]]
         connect {
           sidecar_service {
