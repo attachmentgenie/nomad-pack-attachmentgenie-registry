@@ -1,14 +1,15 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
+  group "mysql" {
     count = [[ .my.count ]]
 
     network {
-      port "http" {
-        to = 8000
+      port "mysql" {
+        to = 3306
       }
     }
 
@@ -16,11 +17,10 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      port = "http"
       check {
         name     = "alive"
-        type     = "http"
-        path     = "/"
+        type     = "tcp"
+        port     = "mysql"
         interval = "10s"
         timeout  = "2s"
       }
@@ -38,12 +38,19 @@ job [[ template "job_name" . ]] {
       driver = "docker"
 
       config {
-        image = "mnomitch/hello_world_server"
-        ports = ["http"]
+        image = "mysql:[[ .my.version_tag ]]"
+        ports = ["mysql"]
       }
 
       env {
-        MESSAGE = [[.my.message | quote]]
+        [[- range $var := .my.env_vars ]]
+        [[ $var.key ]] = "[[ $var.value ]]"
+        [[- end ]]
+      }
+
+      resources {
+        cpu    = [[ .my.resources.cpu ]]
+        memory = [[ .my.resources.memory ]]
       }
     }
   }
