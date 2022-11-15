@@ -1,24 +1,37 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
-  group "app" {
-    count = [[ .my.count ]]
-
+  group "registry" {
     network {
       port "http" {
-        to = 8000
+        to = 5000
+      }
+      port "ui" {
+        to = 80
       }
     }
 
     [[ if .my.register_consul_service ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
+      name = "[[ .my.consul_registry_service_name ]]"
+      tags = [[ .my.consul_registry_service_tags | toStringList ]]
       port = "http"
       check {
-        name     = "alive"
+        type     = "http"
+        path     = "/"
+        interval = "10s"
+        timeout  = "2s"
+      }
+    }
+    
+    service {
+      name = "[[ .my.consul_ui_service_name ]]"
+      tags = [[ .my.consul_ui_service_tags | toStringList ]]
+      port = "ui"
+      check {
         type     = "http"
         path     = "/"
         interval = "10s"
@@ -34,16 +47,51 @@ job [[ template "job_name" . ]] {
       mode = "fail"
     }
 
-    task "server" {
-      driver = "docker"
+    task "store" {
+      driver = "[[ .my.registry_task.driver ]]"
 
       config {
-        image = "mnomitch/hello_world_server"
+        image   = "[[ .my.registry_task.image ]]:[[ .my.registry_task.version ]]"
         ports = ["http"]
+        volumes = [
+          "local/config/registry.yaml:/etc/docker/registry/config.yml",
+        ]
       }
 
+      resources {
+        cpu    = [[ .my.resources.cpu ]]
+        memory = [[ .my.resources.memory ]]
+      }
+      
+
+      
+      template {
+        data = <<EOF
+[[ .my.registry_config ]]
+EOF
+        change_mode   = "signal"
+        change_signal = "SIGHUP"
+        destination   = "local/config/registry.yaml"
+      }
+    }
+
+    task "ui" {
+      driver = "[[ .my.ui_task.driver ]]"
+
+      config {
+        image   = "[[ .my.ui_task.image ]]:[[ .my.ui_task.version ]]"
+        ports = ["ui"]
+      }
+      
       env {
-        MESSAGE = [[.my.message | quote]]
+        [[- range $var := .my.ui_env_vars ]]
+        [[ $var.key ]] = "[[ $var.value ]]"
+        [[- end ]]
+      }
+
+      resources {
+        cpu    = [[ .my.resources.cpu ]]
+        memory = [[ .my.resources.memory ]]
       }
     }
   }

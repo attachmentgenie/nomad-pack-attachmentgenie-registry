@@ -5,6 +5,12 @@ variable "job_name" {
   default = ""
 }
 
+variable "namespace" {
+  description = "The namespace where jobs will be deployed"
+  type        = string
+  default     = ""
+}
+
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -17,18 +23,6 @@ variable "datacenters" {
   default     = ["dc1"]
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
-  type        = number
-  default     = 2
-}
-
-variable "message" {
-  description = "The message your application will render"
-  type        = string
-  default     = "Hello World!"
-}
-
 variable "register_consul_service" {
   description = "If you want to register a consul service for the job"
   type        = bool
@@ -38,20 +32,46 @@ variable "register_consul_service" {
 variable "consul_service_name" {
   description = "The consul service name for the mailpit application"
   type        = string
-  default     = "webapp"
+  default     = "mailpit"
 }
 
 variable "consul_service_tags" {
   description = "The consul service name for the mailpit application"
   type        = list(string)
-  // defaults to integrate with Fabio or Traefik
-  // This routes at the root path "/", to route to this service from
-  // another path, change "urlprefix-/" to "urlprefix-/<PATH>" and
-  // "traefik.http.routers.http.rule=Path(∫/∫)" to
-  // "traefik.http.routers.http.rule=Path(∫/<PATH>∫)"
-  default = [
-    "urlprefix-/",
-    "traefik.enable=true",
-    "traefik.http.routers.http.rule=Path(`/`)",
-  ]
+  default = []
+}
+
+variable "env_vars" {
+  description = "env vars to inject"
+  type = list(object({
+    key   = string
+    value = string
+  }))
+  default = []
+}
+
+variable "resources" {
+  description = "The resource to assign to the tempo service task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 200,
+    memory = 256
+  }
+}
+
+variable "task" {
+  description = "Details configuration options for the promlens task."
+  type        = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "axllent/mailpit",
+    version = "latest",
+  }
 }

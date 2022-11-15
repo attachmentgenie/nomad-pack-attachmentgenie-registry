@@ -1,14 +1,16 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
+  [[ template "namespace" . ]]
   datacenters = [[ .my.datacenters  | toStringList ]]
   type = "service"
 
   group "app" {
-    count = [[ .my.count ]]
-
     network {
       port "http" {
-        to = 8000
+        to = 8025
+      }
+      port "smtp" {
+        to = 1025
       }
     }
 
@@ -35,15 +37,22 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "docker"
+      driver = "[[ .my.task.driver ]]"
 
       config {
-        image = "mnomitch/hello_world_server"
-        ports = ["http"]
+        image   = "[[ .my.task.image ]]:[[ .my.task.version ]]"
+        ports   = ["http","smtp"]
       }
 
       env {
-        MESSAGE = [[.my.message | quote]]
+        [[- range $var := .my.env_vars ]]
+        [[ $var.key ]] = "[[ $var.value ]]"
+        [[- end ]]
+      }
+
+      resources {
+        cpu    = [[ .my.resources.cpu ]]
+        memory = [[ .my.resources.memory ]]
       }
     }
   }
