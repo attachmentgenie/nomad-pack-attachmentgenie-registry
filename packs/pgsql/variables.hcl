@@ -89,3 +89,9 @@ variable "use_patroni" {
   type        = bool
   default     = false
 }
+
+variable "patroni_yaml" {
+  description = "The patroni configuration to pass to the task."
+  type        = string
+  default     = ""
+}
