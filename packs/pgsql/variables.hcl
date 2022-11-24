@@ -59,7 +59,7 @@ variable "env_vars" {
 }
 
 variable "resources" {
-  description = "The resource to assign to the tempo service task."
+  description = "The resource to assign to the pgsql service task."
   type = object({
     cpu    = number
     memory = number

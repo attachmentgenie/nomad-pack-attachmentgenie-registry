@@ -8,6 +8,7 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
+      mode = "bridge"
       port "http" {
         to = 9200
       }
@@ -23,9 +24,22 @@ job [[ template "job_name" . ]] {
       port = "http"
       check {
         type     = "http"
+        protocol = "https"
         path     = "_cluster/health"
         interval = "10s"
         timeout  = "2s"
+        tls_skip_verify = true
+        header {
+          Authorization = ["Basic YWRtaW46YWRtaW4="] # admin:admin
+        }
+      }
+      connect {
+        sidecar_service {
+          tags = [""]
+          proxy {
+            local_service_port = 9200
+          }
+        }
       }
     }
     [[ end ]]

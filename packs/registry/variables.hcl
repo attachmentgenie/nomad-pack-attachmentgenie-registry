@@ -54,7 +54,7 @@ variable "consul_ui_service_tags" {
 }
 
 variable "resources" {
-  description = "The resource to assign to the tempo service task."
+  description = "The resource to assign to the registry service task."
   type = object({
     cpu    = number
     memory = number

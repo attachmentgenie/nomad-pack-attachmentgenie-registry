@@ -39,6 +39,9 @@ job [[ template "job_name" . ]] {
       connect {
         sidecar_service {
           tags = [""]
+          proxy {
+            local_service_port = 9000
+          }
         }
       }
       [[ end ]]
