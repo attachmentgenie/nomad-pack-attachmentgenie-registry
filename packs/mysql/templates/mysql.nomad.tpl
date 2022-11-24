@@ -8,6 +8,7 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
+      mode = "bridge"
       port "mysql" {
         to = 3306
       }
@@ -17,12 +18,14 @@ job [[ template "job_name" . ]] {
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
-      check {
-        name     = "alive"
-        type     = "tcp"
-        port     = "mysql"
-        interval = "10s"
-        timeout  = "2s"
+      port = "mysql"
+      connect {
+        sidecar_service {
+          tags = [""]
+          proxy {
+            local_service_port = 3306
+          }
+        }
       }
     }
     [[ end ]]

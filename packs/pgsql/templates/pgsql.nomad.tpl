@@ -8,6 +8,7 @@ job [[ template "job_name" . ]] {
     count = [[ .my.count ]]
 
     network {
+      mode = "bridge"
       port "pgsql" {
         to = 5432
       }
@@ -23,7 +24,7 @@ job [[ template "job_name" . ]] {
 
     [[ if .my.register_consul_service ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
+      name = "patroni-[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
       check {
         name     = "alive"
@@ -32,6 +33,22 @@ job [[ template "job_name" . ]] {
         path     = "/health"
         interval = "10s"
         timeout  = "2s"
+      }
+    }
+    [[ end ]]
+
+    [[ if .my.register_consul_service ]]
+    service {
+      name = "[[ .my.consul_service_name ]]"
+      tags = [[ .my.consul_service_tags | toStringList ]]
+      port = "pgsql"
+      connect {
+        sidecar_service {
+          tags = [""]
+          proxy {
+            local_service_port = 5432
+          }
+        }
       }
     }
     [[ end ]]
