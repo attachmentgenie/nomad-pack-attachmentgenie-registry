@@ -23,6 +23,7 @@ job [[ template "job_name" . ]] {
     }
 
     [[ if .my.register_consul_service ]]
+    [[ if .my.use_patroni ]]
     service {
       name = "patroni-[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
@@ -37,7 +38,6 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    [[ if .my.register_consul_service ]]
     service {
       name = "[[ .my.consul_service_name ]]"
       tags = [[ .my.consul_service_tags | toStringList ]]
