@@ -1,17 +1,10 @@
 app {
-  url    = ""
-  author = ""
+  url    = "https://opensearch.org/"
+  author = "Amazon"
 }
 pack {
   name        = "opensearch"
-  description = ""
-  url         = ""
-  version     = ""
+  description = "OpenSearch is a community-driven, Apache 2.0-licensed open source search and analytics suite that makes it easy to ingest, search, visualize, and analyze data."
+  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/opensearch"
+  version     = "0.1.0"
 }
-
-// Optional dependency information. This block can be repeated.
-
-// dependency {
-//   name   = "demo_dependency_pack_name"
-//   source = "git://source.git/packs/demo_dependency_pack"
-// }
