@@ -9,9 +9,11 @@ job [[ template "job_name" . ]] {
       port "http" {
         to = 5000
       }
+      [[ if .my.ui_task.expose ]]
       port "ui" {
         to = 80
       }
+      [[ end ]]
     }
 
     [[ if .my.register_consul_service ]]
@@ -75,6 +77,7 @@ EOF
       }
     }
 
+    [[ if .my.ui_task.expose ]]
     task "ui" {
       driver = "[[ .my.ui_task.driver ]]"
 
@@ -94,5 +97,6 @@ EOF
         memory = [[ .my.resources.memory ]]
       }
     }
+    [[ end ]]
   }
 }

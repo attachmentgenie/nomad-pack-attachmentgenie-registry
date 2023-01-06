@@ -100,11 +100,13 @@ variable "ui_task" {
   description = "Details configuration options for the promlens task."
   type        = object({
     driver  = string
+    expose  = bool
     image   = string
     version = string
   })
   default = {
     driver  = "docker",
+    expose  = true,
     image   = "joxit/docker-registry-ui",
     version = "latest",
   }
