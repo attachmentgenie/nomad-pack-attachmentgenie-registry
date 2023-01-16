@@ -1,21 +1,26 @@
-// Nomad Job Variables
 variable "job_name" {
-  description = "Name of the Nomad job -- Overrides the default pack name"
+  description = "The name to use as the job name which overrides using the pack name"
   type        = string
   // If "", the pack name will be used
   default = ""
 }
 
-variable "datacenters" {
-  description = "Datacenters this job will be deployed"
-  type        = list(string)
-  default     = ["dc1"]
+variable "namespace" {
+  description = "The namespace where jobs will be deployed"
+  type        = string
+  default     = ""
 }
 
 variable "region" {
-  description = "Region where the job should be placed."
+  description = "The region where jobs will be deployed"
   type        = string
-  default     = "global"
+  default     = ""
+}
+
+variable "datacenters" {
+  description = "A list of datacenters in the region which are eligible for task placement"
+  type        = list(string)
+  default     = ["dc1"]
 }
 
 variable "app_count" {

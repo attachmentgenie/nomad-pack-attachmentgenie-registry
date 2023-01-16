@@ -1,7 +1,8 @@
 job [[ template "job_name" . ]] {
   [[ template "region" . ]]
-  datacenters = [[ .my.datacenters | toStringList ]]
-  type        = "service"
+  [[ template "namespace" . ]]
+  datacenters = [[ .my.datacenters  | toStringList ]]
+  type = "service"
 
   group "redis" {
     count = [[ .my.app_count ]]
