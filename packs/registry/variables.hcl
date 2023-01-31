@@ -38,7 +38,7 @@ variable "consul_registry_service_name" {
 variable "consul_ui_service_name" {
   description = "The consul service name for the registry application"
   type        = string
-  default     = "registry"
+  default     = "images"
 }
 
 variable "consul_registry_service_tags" {
