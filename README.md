@@ -16,7 +16,7 @@ This registry current holds packs for the following tools
 * Redis  (fork from community registry)
 * Docker Registry
 
-## Step Six: Deploy your Custom Pack!
+## Deploy packs from this nomad-pack registry
 
 Add your custom repository using the `nomad-pack registry add` command.
 

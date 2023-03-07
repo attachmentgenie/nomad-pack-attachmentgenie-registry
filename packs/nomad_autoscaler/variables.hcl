@@ -80,7 +80,7 @@ variable "autoscaler_agent_task_service" {
   }
 }
 
-variable "autoscaler_agent_upstreams" {
+variable "autoscaler_agent_task_upstreams" {
   description = ""
   type = list(object({
     name = string

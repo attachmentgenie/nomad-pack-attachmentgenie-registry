@@ -7,10 +7,41 @@ job [[ template "full_job_name" . ]] {
   group "autoscaler" {
 
     network {
+      mode = "bridge"
       port [[ .nomad_autoscaler.autoscaler_agent_network.autoscaler_http_port_label | quote ]] {
         to = 8080
       }
     }
+
+    [[- if .nomad_autoscaler.autoscaler_agent_task_service.enabled ]]
+    service {
+      name = [[ .nomad_autoscaler.autoscaler_agent_task_service.service_name | quote ]]
+      port = [[ .nomad_autoscaler.autoscaler_agent_network.autoscaler_http_port_label | quote ]]
+      tags = [[ .nomad_autoscaler.autoscaler_agent_task_service.service_tags | toStringList ]]
+
+      check {
+        type     = [[ .nomad_autoscaler.autoscaler_agent_network.autoscaler_http_port_label | quote ]]
+        path     = "/v1/health"
+        interval = [[ .nomad_autoscaler.autoscaler_agent_task_service.check_interval | quote ]]
+        timeout  = [[ .nomad_autoscaler.autoscaler_agent_task_service.check_timeout | quote ]]
+      }
+
+      connect {
+        sidecar_service {
+          tags = [""]
+          proxy {
+            local_service_port = 8080
+            [[ range $upstream := .my.autoscaler_agent_task_upstreams ]]
+            upstreams {
+              destination_name = [[ $upstream.name | quote ]]
+              local_bind_port  = [[ $upstream.port ]]
+            }
+            [[ end ]]
+          }
+        }
+      }
+    }
+    [[- end ]]
 
     task "autoscaler_agent" {
       driver = [[ .nomad_autoscaler.autoscaler_agent_task.driver | quote ]]
@@ -62,36 +93,6 @@ job [[ template "full_job_name" . ]] {
         cpu    = [[ .nomad_autoscaler.autoscaler_agent_task_resources.cpu ]]
         memory = [[ .nomad_autoscaler.autoscaler_agent_task_resources.memory ]]
       }
-
-      [[- if .nomad_autoscaler.autoscaler_agent_task_service.enabled ]]
-      service {
-        name = [[ .nomad_autoscaler.autoscaler_agent_task_service.service_name | quote ]]
-        port = [[ .nomad_autoscaler.autoscaler_agent_network.autoscaler_http_port_label | quote ]]
-        tags = [[ .nomad_autoscaler.autoscaler_agent_task_service.service_tags | toStringList ]]
-
-        check {
-          type     = [[ .nomad_autoscaler.autoscaler_agent_network.autoscaler_http_port_label | quote ]]
-          path     = "/v1/health"
-          interval = [[ .nomad_autoscaler.autoscaler_agent_task_service.check_interval | quote ]]
-          timeout  = [[ .nomad_autoscaler.autoscaler_agent_task_service.check_timeout | quote ]]
-        }
-
-        connect {
-          sidecar_service {
-            tags = [""]
-            proxy {
-              local_service_port = 8080
-              [[ range $upstream := .my.autoscaler_agent_upstreams ]]
-              upstreams {
-                destination_name = [[ $upstream.name | quote ]]
-                local_bind_port  = [[ $upstream.port ]]
-              }
-              [[ end ]]
-            }
-          }
-        }
-      }
-      [[- end ]]
     }
   }
 }
