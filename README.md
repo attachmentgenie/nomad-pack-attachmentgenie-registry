@@ -1,8 +1,33 @@
-# Example Nomad Pack Registry
+# Attachmentgenie Nomad Pack Registry
 
-This repository is meant to be used as a reference when writing custom pack registries for [Nomad Pack](https://github.com/hashicorp/nomad-pack).
+This repository will hold a curated set of [Nomad Packs](https://github.com/hashicorp/nomad-pack) related to all things observability.
 
 See the [documentation on Writing Packs and Registries](https://github.com/hashicorp/nomad-pack/blob/main/docs/writing-packs.md) for more information.
 
-To get started writing your own pack, make a directory with your pack name. Use the `hello_world` pack as
-an example for file structure and contents.
+This registry current holds packs for the following tools
+
+* Jenkins  (fork from community registry)
+* Mailpit
+* Minio
+* MYSQL
+* Nomad Autoscaler  (fork from community registry)
+* Opensearch
+* Postgresql
+* Redis  (fork from community registry)
+* Docker Registry
+
+## Step Six: Deploy your Custom Pack!
+
+Add your custom repository using the `nomad-pack registry add` command.
+
+```
+nomad-pack registry add attachmentgenie github.com/attachmentgenie/nomad-pack-attachmentgenie-registry
+```
+
+Deploy your custom packs.
+
+```
+nomad-pack run jenkins --registry=attachmentgenie
+```
+
+Congrats! You can now write custom packs for Nomad!
