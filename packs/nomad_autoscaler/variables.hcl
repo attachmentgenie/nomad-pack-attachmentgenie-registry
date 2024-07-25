@@ -1,25 +1,60 @@
 variable "job_name" {
-  description = "The name to use as the job name which overrides using the pack name."
+  # If "", the pack name will be used
+  description = "The name to use as the job name which overrides using the pack name"
+  type        = string
+  default     = ""
+}
+
+variable "region" {
+  description = "The region where jobs will be deployed"
   type        = string
   default     = ""
 }
 
 variable "datacenters" {
-  description = "A list of datacenters in the region which are eligible for task placement."
+  description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
-}
-
-variable "region" {
-  description = "The region where the job should be placed."
-  type        = string
-  default     = "global"
+  default     = ["*"]
 }
 
 variable "namespace" {
   description = "The namespace where the job should be placed."
   type        = string
   default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "count" {
+  description = "The number of app instances to deploy"
+  type        = number
+  default     = 1
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 80
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "linux",
+      operator  = "",
+    },
+  ]
 }
 
 variable "autoscaler_agent_network" {
@@ -35,6 +70,7 @@ variable "autoscaler_agent_network" {
 variable "autoscaler_agent_task" {
   description = "Details configuration options for the Nomad Autoscaler agent task."
   type = object({
+    count                = number
     driver               = string
     version              = string
     additional_cli_args  = list(string)
@@ -42,23 +78,24 @@ variable "autoscaler_agent_task" {
     scaling_policy_files = list(string)
   })
   default = {
+    count                = 3,
     driver               = "docker",
-    version              = "0.3.3",
-    additional_cli_args  = ["-nomad-address=http://$${attr.unique.network.ip-address}:4646", "-http-bind-address=0.0.0.0"],
+    version              = "0.4.4",
+    additional_cli_args  = ["-nomad-address=http://$${attr.unique.network.ip-address}:4646", "-http-bind-address=0.0.0.0", "-high-availability-enabled"],
     config_files         = [],
     scaling_policy_files = []
   }
 }
 
-variable "autoscaler_agent_task_resources" {
-  description = "The resource to assign to the Nomad Autoscaler task."
+variable "task_resources" {
+  description = "The resources to assign to the OpenTelemetry Collector task."
   type = object({
     cpu    = number
     memory = number
   })
   default = {
-    cpu    = 500,
-    memory = 256
+    cpu    = 256
+    memory = 512
   }
 }
 
@@ -72,7 +109,7 @@ variable "autoscaler_agent_task_service" {
     check_timeout  = string
   })
   default = {
-    enabled        = true
+    enabled        = false
     service_name   = "nomad-autoscaler",
     service_tags   = [],
     check_interval = "3s",

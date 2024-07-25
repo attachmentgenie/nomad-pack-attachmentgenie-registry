@@ -1,38 +1,41 @@
 variable "job_name" {
-  description = "The name to use as the job name which overrides using the pack name."
+  description = "The name to use as the job name which overrides using the pack name"
   type        = string
   // If "", the pack name will be used
-  default = "jenkins"
+  default = ""
 }
 
 variable "region" {
-  description = "The region where jobs will be deployed."
+  description = "The region where jobs will be deployed"
   type        = string
   default     = ""
 }
 
 variable "datacenters" {
-  description = "A list of datacenters in the region which are eligible for task placement."
+  description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
 }
 
 variable "namespace" {
   description = "The namespace where the job should be placed."
   type        = string
+  default     = "default"
 }
 
-variable "plugins" {
-  description = "A list of jenkins plugins to install. See https://github.com/jenkinsci/docker/blob/master/README.md#plugin-installation-manager-cli-preview-1 for more info."
-  type        = list(string)
-}
-
-variable "jasc_config" {
-  description = "Use the Jenkins as Code plugin to configure jenkins. This requires the configuration-as-code plugin to be installed."
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
   type        = string
+  default     = "default"
 }
 
-variable "constraints" {
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
   description = "Constraints to apply to the entire job."
   type = list(object({
     attribute = string
@@ -48,18 +51,6 @@ variable "constraints" {
   ]
 }
 
-variable "image_name" {
-  description = "The docker image name."
-  type        = string
-  default     = "jenkins/jenkins"
-}
-
-variable "image_tag" {
-  description = "The docker image tag."
-  type        = string
-  default     = "lts-jdk11"
-}
-
 variable "task_resources" {
   description = "Resources used by jenkins task."
   type = object({
@@ -70,6 +61,28 @@ variable "task_resources" {
     cpu    = 1000,
     memory = 1024,
   }
+}
+
+variable "plugins" {
+  description = "A list of jenkins plugins to install. See https://github.com/jenkinsci/docker/blob/master/README.md#plugin-installation-manager-cli-preview-1 for more info."
+  type        = list(string)
+}
+
+variable "jasc_config" {
+  description = "Use the Jenkins as Code plugin to configure jenkins. This requires the configuration-as-code plugin to be installed."
+  type        = string
+}
+
+variable "image_name" {
+  description = "The docker image name."
+  type        = string
+  default     = "jenkins/jenkins"
+}
+
+variable "image_tag" {
+  description = "The docker image tag."
+  type        = string
+  default     = "lts-jdk17"
 }
 
 variable "register_consul_service" {

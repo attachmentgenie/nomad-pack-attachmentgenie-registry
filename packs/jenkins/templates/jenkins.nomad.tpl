@@ -1,30 +1,12 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  datacenters = [[ .jenkins.datacenters | toStringList ]]
-  type = "service"
-  [[- if .jenkins.namespace ]]
-  namespace   = [[ .jenkins.namespace | quote ]]
-  [[- end ]]
-  [[- if .jenkins.constraints ]][[ range $idx, $constraint := .jenkins.constraints ]]
-  constraint {
-    [[- if ne $constraint.attribute "" ]]
-    attribute = [[ $constraint.attribute | quote ]]
-    [[- end ]]
-    [[- if ne $constraint.value "" ]]
-    value     = [[ $constraint.value | quote ]]
-    [[- end ]]
-    [[- if ne $constraint.operator "" ]]
-    operator  = [[ $constraint.operator | quote ]]
-    [[- end ]]
-  }
-  [[- end ]]
-  [[- end ]]
+  [[ template "placement" . ]]
 
   group [[ template "job_name" . ]] {
-    count = 1
 
     network {
+      [[ if var "register_consul_service" . ]]
       mode = "bridge"
+      [[ end ]]
       port "http" {
         to = 8080
       }
@@ -33,12 +15,12 @@ job [[ template "job_name" . ]] {
       }
     }
 
-    [[- if .jenkins.register_consul_service ]]
+    [[ if var "register_consul_service" . ]]
     service {
-      name = "[[ .jenkins.consul_service_name ]]"
-      [[- if ne (len .jenkins.consul_service_tags) 0 ]]
-      tags = [[ .jenkins.consul_service_tags | toStringList ]]
-      [[- end ]]
+      name = "[[ var "consul_service_name" . ]]"
+      [[ range $tag := var "consul_service_tags" . ]]
+      tags = [[ var "consul_service_tags" . | toStringList ]]
+      [[ end ]]
       port = "http"
 
       check {
@@ -59,11 +41,11 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    [[- if .jenkins.volume_name ]]
-    volume "[[.jenkins.volume_name]]" {
-      type      = "[[.jenkins.volume_type]]"
+    [[ if var "volume_name" . ]]
+    volume "[[ var "volume_name" . ]]" {
+      type      = "[[ var "volume_type" . ]]"
       read_only = false
-      source    = "[[.jenkins.volume_name]]"
+      source    = "[[ var "volume_name" . ]]"
     }
     [[- end ]]
 
@@ -74,7 +56,7 @@ job [[ template "job_name" . ]] {
       mode = "fail"
     }
 
-    [[- if .jenkins.volume_name ]]
+    [[ if var "volume_name" . ]]
     task "chown" {
       lifecycle {
         hook    = "prestart"
@@ -82,7 +64,7 @@ job [[ template "job_name" . ]] {
       }
 
       volume_mount {
-        volume      = "[[ .jenkins.volume_name ]]"
+        volume      = "[[ var "volume_name" . ]]"
         destination = "/var/jenkins_home"
         read_only   = false
       }
@@ -95,23 +77,22 @@ job [[ template "job_name" . ]] {
         args    = ["-c", "chown -R 1000:1000 /var/jenkins_home"]
       }
 
-      resources {
-        cpu    = 200
-        memory = 128
-      }
+      [[ template "resources" . ]]
     }
     [[- end ]]
 
-    [[- if .jenkins.plugins ]]
+    [[ if var "plugins" . ]]
     task "install-plugins" {
       driver = "docker"
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = "[[ .jenkins.volume_name ]]"
+        volume      = "[[ var "volume_name" . ]]"
         destination = "/var/jenkins_home"
         read_only   = false
       }
+      [[- end ]]
       config {
-        image   = "[[ .jenkins.image_name ]]:[[ .jenkins.image_tag ]]"
+        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         command = "jenkins-plugin-cli"
         args    = ["-f", "/var/jenkins_home/plugins.txt", "--plugin-download-directory", "/var/jenkins_home/plugins/"]
         volumes = [
@@ -126,61 +107,59 @@ job [[ template "job_name" . ]] {
 
       template {
         data = <<EOF
-[[ range $plugin := .jenkins.plugins ]][[ $plugin]]
+[[ range $plugin := var "plugins" . ]][[ $plugin]]
 [[ end ]]
 EOF
         destination   = "local/plugins.txt"
         change_mode   = "noop"
       }
 
-      resources {
-        cpu    = [[ .jenkins.task_resources.cpu ]]
-        memory = [[ .jenkins.task_resources.memory ]]
-      }
+      [[ template "resources" . ]]
     }
     [[- end ]]
 
     task [[ template "job_name" . ]] {
       driver = "docker"
 
-      [[- if .jenkins.volume_name ]]
+      [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = "[[ .jenkins.volume_name ]]"
+        volume      = "[[ var "volume_name" . ]]"
         destination = "/var/jenkins_home"
         read_only   = false
       }
       [[- end ]]
 
       config {
-        image = "[[ .jenkins.image_name ]]:[[ .jenkins.image_tag ]]"
+        image = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         ports = ["http","jnlp"]
-        [[- if .jenkins.jasc_config ]]
+        [[ if var "jasc_config" . ]]
         volumes = [
           "local/jasc.yaml:/var/jenkins_home/jenkins.yaml",
         ]
         [[ end ]]
       }
-      [[if ne (len .jenkins.docker_jenkins_env_vars) 0 ]]
+
       env {
-        [[ range $key, $var := .jenkins.docker_jenkins_env_vars ]]
+        [[ range $key, $var := var "docker_jenkins_env_vars" . ]]
         [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
         [[ end ]]
       }
-      [[ end ]]
 
-      [[- if .jenkins.jasc_config]]
+      [[ if var "jasc_config" . ]]
       template {
         data = <<EOF
-[[ .jenkins.jasc_config ]]
+[[ var "jasc_config" . ]]
 EOF
         change_mode   = "noop"
         destination   = "local/jasc.yaml"
       }
       [[ end ]]
 
-      resources {
-        cpu    = [[ .jenkins.task_resources.cpu ]]
-        memory = [[ .jenkins.task_resources.memory ]]
+      [[ template "resources" . ]]
+
+      action "show-admin-password" {
+        command = "cat"
+        args = ["/var/jenkins_home/secrets/initialAdminPassword"]
       }
     }
   }

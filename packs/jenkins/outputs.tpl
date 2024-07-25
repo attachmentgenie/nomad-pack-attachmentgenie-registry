@@ -1,1 +1,1 @@
-Congrats on deploying [[ .nomad_pack.pack.name ]].
+Congrats on deploying [[ template "job_name" . ]].
