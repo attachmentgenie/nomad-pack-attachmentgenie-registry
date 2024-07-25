@@ -3,7 +3,7 @@ app {
 }
 
 pack {
-  name        = "seaplane_helpers"
+  name        = "attachmentgenie_pack_helpers"
   description = "Helper templates to make life that much easier and uniform."
-  version     = "0.1.1"
+  version     = "0.1.0"
 }
