@@ -1,7 +1,7 @@
 docker_jenkins_env_vars = {
-  "java_opts": "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false",
+  "java_opts" : "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false",
 }
-jasc_config = <<EOF
+jasc_config             = <<EOF
 jenkins:
   agentProtocols:
   - "JNLP4-connect"
@@ -75,6 +75,6 @@ jobs:
         }
       }
 EOF
-plugins = ["configuration-as-code", "hashicorp-vault-plugin", "job-dsl", "nomad"]
+plugins                 = ["configuration-as-code", "hashicorp-vault-plugin", "job-dsl", "nomad"]
 register_consul_service = true
-volume_name = "jenkins"
+volume_name             = "jenkins"

@@ -1,25 +1,22 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
-  type = "service"
+  [[ template "placement" . ]]
 
   group "registry" {
     network {
       port "http" {
         to = 5000
       }
-      [[ if .my.ui_task.expose ]]
+      [[ if var "ui_task.expose" . ]]
       port "ui" {
         to = 80
       }
       [[ end ]]
     }
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_consul_service" . ]]
     service {
-      name = "[[ .my.consul_registry_service_name ]]"
-      tags = [[ .my.consul_registry_service_tags | toStringList ]]
+      name = "[[ var "consul_registry_service_name" . ]]"
+      tags = [[ var "consul_registry_service_tags" . | toStringList ]]
       port = "http"
       check {
         type     = "http"
@@ -30,8 +27,8 @@ job [[ template "job_name" . ]] {
     }
     
     service {
-      name = "[[ .my.consul_ui_service_name ]]"
-      tags = [[ .my.consul_ui_service_tags | toStringList ]]
+      name = "[[ var "consul_ui_service_name" . ]]"
+      tags = [[ var "consul_ui_service_tags" . | toStringList ]]
       port = "ui"
       check {
         type     = "http"
@@ -50,26 +47,21 @@ job [[ template "job_name" . ]] {
     }
 
     task "store" {
-      driver = "[[ .my.registry_task.driver ]]"
+      driver = "[[ var "registry_task.driver" . ]]"
 
       config {
-        image   = "[[ .my.registry_task.image ]]:[[ .my.registry_task.version ]]"
+        image   = "[[ var "registry_task.image" . ]]:[[ var "registry_task.version" . ]]"
         ports = ["http"]
         volumes = [
           "local/config/registry.yaml:/etc/docker/registry/config.yml",
         ]
       }
 
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
-      
+      [[ template "resources" . ]]
 
-      
       template {
         data = <<EOF
-[[ .my.registry_config ]]
+[[ var "registry_config" . ]]
 EOF
         change_mode   = "signal"
         change_signal = "SIGHUP"
@@ -77,25 +69,23 @@ EOF
       }
     }
 
-    [[ if .my.ui_task.expose ]]
+    [[ if var "ui_task.expose" . ]]
     task "ui" {
-      driver = "[[ .my.ui_task.driver ]]"
+      driver = "[[ var "ui_task.driver" . ]]"
 
       config {
-        image   = "[[ .my.ui_task.image ]]:[[ .my.ui_task.version ]]"
+        image   = "[[ var "ui_task.image" . ]]:[[ var "ui_task.version" . ]]"
         ports = ["ui"]
       }
-      
+
       env {
-        [[- range $var := .my.ui_env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
+        REGISTRY_URL = "http://${NOMAD_HOST_ADDR_http}"
+        [[ range $key, $var := var "ui_env_vars" . ]]
+        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
+        [[ end ]]
       }
 
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "resources" . ]]
     }
     [[ end ]]
   }

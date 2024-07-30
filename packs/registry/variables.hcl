@@ -5,12 +5,6 @@ variable "job_name" {
   default = ""
 }
 
-variable "namespace" {
-  description = "The namespace where jobs will be deployed"
-  type        = string
-  default     = ""
-}
-
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -20,7 +14,53 @@ variable "region" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
+}
+
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
+}
+
+variable "task_resources" {
+  description = "Resources used by jenkins task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 200,
+    memory = 256,
+  }
 }
 
 variable "register_consul_service" {
@@ -44,35 +84,34 @@ variable "consul_ui_service_name" {
 variable "consul_registry_service_tags" {
   description = "The consul service name for the registry application"
   type        = list(string)
-  default = []
+  default     = []
 }
 
 variable "consul_ui_service_tags" {
   description = "The consul service name for the registry application"
   type        = list(string)
-  default = []
-}
-
-variable "resources" {
-  description = "The resource to assign to the registry service task."
-  type = object({
-    cpu    = number
-    memory = number
-  })
-  default = {
-    cpu    = 200,
-    memory = 256
-  }
+  default     = []
 }
 
 variable "registry_config" {
   description = "The yaml configuration for the registry"
   type        = string
+  default     = <<EOH
+---
+version: 0.1
+http:
+  addr: 0.0.0.0:5000
+  headers:
+    Access-Control-Allow-Origin: ['*']
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+EOH
 }
 
 variable "registry_task" {
   description = "Details configuration options for the promlens task."
-  type        = object({
+  type = object({
     driver  = string
     image   = string
     version = string
@@ -86,19 +125,16 @@ variable "registry_task" {
 
 variable "ui_env_vars" {
   description = "env vars to inject"
-  type = list(object({
-    key   = string
-    value = string
-  }))
-  default = [
-    {key = "DELETE_IMAGES", value = "true"},
-    {key = "SINGLE_REGISTRY", value = "true"},
-  ]
+  type        = map(string)
+  default = {
+    "DELETE_IMAGES" : true,
+    "SINGLE_REGISTRY" : true,
+  }
 }
 
 variable "ui_task" {
   description = "Details configuration options for the promlens task."
-  type        = object({
+  type = object({
     driver  = string
     expose  = bool
     image   = string

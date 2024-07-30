@@ -1,5 +1,5 @@
 app {
-  url    = "https://www.jenkins.io/"
+  url = "https://www.jenkins.io/"
 }
 
 pack {

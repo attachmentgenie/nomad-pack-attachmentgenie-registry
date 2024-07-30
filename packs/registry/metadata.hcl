@@ -1,10 +1,15 @@
 app {
-  url    = "https://joxit.dev/docker-registry-ui/"
-  author = "Jones Magloire"
+  url = "https://joxit.dev/docker-registry-ui/"
 }
+
 pack {
   name        = "registry"
   description = "The simplest and most complete UI for your private registry"
-  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/registry"
-  version     = "0.1.0"
+  version     = "0.2.0"
+}
+
+dependency "attachmentgenie_pack_helpers" {
+  alias  = "attachmentgenie_pack_helpers"
+  source = "git::https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry.git//packs/attachmentgenie_pack_helpers"
+  ref    = "92d4feb5"
 }

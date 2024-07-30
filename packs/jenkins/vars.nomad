@@ -1,5 +1,5 @@
 docker_jenkins_env_vars = {
-  "java_opts": "-Dhudson.model.DownloadService.noSignatureCheck=true",
+  "java_opts" : "-Dhudson.model.DownloadService.noSignatureCheck=true",
 }
 register_consul_service = true
-volume_name = "jenkins"
+volume_name             = "jenkins"
