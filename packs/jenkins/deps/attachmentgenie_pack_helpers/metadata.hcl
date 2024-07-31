@@ -5,5 +5,5 @@ app {
 pack {
   name        = "attachmentgenie_pack_helpers"
   description = "Helper templates to make life that much easier and uniform."
-  version     = "0.1.0"
+  version     = "0.2.0"
 }

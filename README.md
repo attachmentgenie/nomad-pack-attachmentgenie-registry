@@ -15,6 +15,7 @@ This registry current holds packs for the following tools
 * Postgresql
 * Redis  (fork from community registry)
 * Docker Registry
+* Seaweedfs CSI Driver
 
 ## Deploy packs from this nomad-pack registry
 
