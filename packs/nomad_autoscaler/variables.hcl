@@ -29,12 +29,6 @@ variable "node_pool" {
   default     = "default"
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
-  type        = number
-  default     = 1
-}
-
 variable "priority" {
   description = "The priority value the job will be given"
   type        = number

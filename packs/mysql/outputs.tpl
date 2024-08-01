@@ -1,1 +1,1 @@
-Congrats! You deployed the mysql pack on Nomad.
+Congrats! You deployed the [[ template "job_name" . ]] pack on Nomad.

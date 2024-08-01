@@ -5,12 +5,6 @@ variable "job_name" {
   default = ""
 }
 
-variable "namespace" {
-  description = "The namespace where jobs will be deployed"
-  type        = string
-  default     = ""
-}
-
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -20,7 +14,53 @@ variable "region" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
+}
+
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
+}
+
+variable "task_resources" {
+  description = "The resources to assign to the OpenTelemetry Collector task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 256
+    memory = 512
+  }
 }
 
 variable "register_consul_service" {
@@ -38,33 +78,18 @@ variable "consul_service_name" {
 variable "consul_service_tags" {
   description = "The consul service name for the mailpit application"
   type        = list(string)
-  default = []
+  default     = []
 }
 
 variable "env_vars" {
-  description = "env vars to inject"
-  type = list(object({
-    key   = string
-    value = string
-  }))
-  default = []
-}
-
-variable "resources" {
-  description = "The resource to assign to the mailpit service task."
-  type = object({
-    cpu    = number
-    memory = number
-  })
-  default = {
-    cpu    = 200,
-    memory = 256
-  }
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
+  default     = {}
 }
 
 variable "task" {
   description = "Details configuration options for the promlens task."
-  type        = object({
+  type = object({
     driver  = string
     image   = string
     version = string

@@ -1,5 +1,6 @@
 job [[ template "job_name" . ]] {
   [[ template "placement" . ]]
+  type = "service"
 
   group [[ template "job_name" . ]] {
 
@@ -41,13 +42,7 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    [[ if var "volume_name" . ]]
-    volume "[[ var "volume_name" . ]]" {
-      type      = "[[ var "volume_type" . ]]"
-      read_only = false
-      source    = "[[ var "volume_name" . ]]"
-    }
-    [[- end ]]
+    [[ template "volume" . ]]
 
     restart {
       attempts = 2
@@ -63,12 +58,6 @@ job [[ template "job_name" . ]] {
         sidecar = false
       }
 
-      volume_mount {
-        volume      = "[[ var "volume_name" . ]]"
-        destination = "/var/jenkins_home"
-        read_only   = false
-      }
-
       driver = "docker"
 
       config {
@@ -78,19 +67,18 @@ job [[ template "job_name" . ]] {
       }
 
       [[ template "resources" . ]]
+
+      volume_mount {
+        volume      = "[[ var "volume_name" . ]]"
+        destination = "/var/jenkins_home"
+        read_only   = false
+      }
     }
     [[- end ]]
 
     [[ if var "plugins" . ]]
     task "install-plugins" {
       driver = "docker"
-      [[ if var "volume_name" . ]]
-      volume_mount {
-        volume      = "[[ var "volume_name" . ]]"
-        destination = "/var/jenkins_home"
-        read_only   = false
-      }
-      [[- end ]]
       config {
         image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
         command = "jenkins-plugin-cli"
@@ -99,7 +87,7 @@ job [[ template "job_name" . ]] {
           "local/plugins.txt:/var/jenkins_home/plugins.txt",
         ]
       }
-    
+
       lifecycle {
         hook    = "prestart"
         sidecar = false
@@ -115,11 +103,6 @@ EOF
       }
 
       [[ template "resources" . ]]
-    }
-    [[- end ]]
-
-    task [[ template "job_name" . ]] {
-      driver = "docker"
 
       [[ if var "volume_name" . ]]
       volume_mount {
@@ -128,6 +111,11 @@ EOF
         read_only   = false
       }
       [[- end ]]
+    }
+    [[- end ]]
+
+    task [[ template "job_name" . ]] {
+      driver = "docker"
 
       config {
         image = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
@@ -156,6 +144,14 @@ EOF
       [[ end ]]
 
       [[ template "resources" . ]]
+
+      [[ if var "volume_name" . ]]
+      volume_mount {
+        volume      = "[[ var "volume_name" . ]]"
+        destination = "/var/jenkins_home"
+        read_only   = false
+      }
+      [[- end ]]
 
       action "show-admin-password" {
         command = "cat"

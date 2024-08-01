@@ -5,12 +5,6 @@ variable "job_name" {
   default = ""
 }
 
-variable "namespace" {
-  description = "The namespace where jobs will be deployed"
-  type        = string
-  default     = ""
-}
-
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -20,11 +14,57 @@ variable "region" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
+}
+
+variable "task_resources" {
+  description = "The resources to assign to the OpenTelemetry Collector task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 256
+    memory = 512
+  }
+}
+
+variable "app_count" {
+  description = "Number of instances to deploy"
   type        = number
   default     = 1
 }
@@ -44,15 +84,24 @@ variable "consul_service_name" {
 variable "consul_service_tags" {
   description = "The consul service name for the minio application"
   type        = list(string)
-  default = []
+  default     = []
 }
 
 variable "env_vars" {
-  description = "env vars to inject"
-  type = list(object({
-    key   = string
-    value = string
-  }))
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
+  default     = {}
+}
+
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
 }
 
 variable "version_tag" {

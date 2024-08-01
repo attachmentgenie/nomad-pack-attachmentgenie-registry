@@ -1,10 +1,15 @@
 app {
-  url    = "https://min.io/"
-  author = "minio"
+  url = "https://min.io/"
 }
+
 pack {
   name        = "minio"
   description = "Install minio"
-  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/minio"
-  version     = "0.1.0"
+  version     = "0.2.0"
+}
+
+dependency "attachmentgenie_pack_helpers" {
+  alias  = "attachmentgenie_pack_helpers"
+  source = "git::https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry.git//packs/attachmentgenie_pack_helpers"
+  ref    = "92d4feb5"
 }

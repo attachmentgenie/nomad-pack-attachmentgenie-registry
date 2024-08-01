@@ -1,1 +1,1 @@
-Congrats! You deployed the mailpit pack on Nomad.
+Congrats! You deployed the [[ template "job_name" . ]] pack on Nomad.

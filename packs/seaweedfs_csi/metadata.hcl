@@ -1,6 +1,7 @@
 app {
   url = "https://github.com/seaweedfs/seaweedfs-csi-driver"
 }
+
 pack {
   name        = "seaweedfs_csi"
   description = "Container Storage Interface (CSI) for SeaweedFS"

@@ -1,1 +1,1 @@
-Congrats! You deployed the registry pack on Nomad.
+Congrats! You deployed the [[ template "job_name" . ]] pack on Nomad.

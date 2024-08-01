@@ -1,7 +1,5 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
+  [[ template "placement" . ]]
   type = "service"
 
   group "app" {
@@ -14,10 +12,12 @@ job [[ template "job_name" . ]] {
       }
     }
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_consul_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
+      name = "[[ var "consul_service_name" . ]]"
+      [[ range $tag := var "consul_service_tags" . ]]
+      tags = [[ var "consul_service_tags" . | toStringList ]]
+      [[ end ]]
       port = "http"
       check {
         name     = "alive"
@@ -37,23 +37,20 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "[[ .my.task.driver ]]"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image   = "[[ .my.task.image ]]:[[ .my.task.version ]]"
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         ports   = ["http","smtp"]
       }
 
       env {
-        [[- range $var := .my.env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
+        [[ range $key, $var := var "env_vars" . ]]
+        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
+        [[ end ]]
       }
 
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "resources" . ]]
     }
   }
 }

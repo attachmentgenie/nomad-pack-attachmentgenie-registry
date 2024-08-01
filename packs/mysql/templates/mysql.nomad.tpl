@@ -1,23 +1,24 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
+  [[ template "placement" . ]]
   type = "service"
 
   group "mysql" {
-    count = [[ .my.count ]]
 
     network {
+      [[ if var "register_consul_service" . ]]
       mode = "bridge"
+      [[ end ]]
       port "mysql" {
         to = 3306
       }
     }
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_consul_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
+      name = "[[ var "consul_service_name" . ]]"
+      [[ range $tag := var "consul_service_tags" . ]]
+      tags = [[ var "consul_service_tags" . | toStringList ]]
+      [[ end ]]
       port = "mysql"
       connect {
         sidecar_service {
@@ -41,20 +42,17 @@ job [[ template "job_name" . ]] {
       driver = "docker"
 
       config {
-        image = "mysql:[[ .my.version_tag ]]"
+        image = "mysql:[[ var "version_tag" . ]]"
         ports = ["mysql"]
       }
 
       env {
-        [[- range $var := .my.env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
+        [[ range $key, $var := var "env_vars" . ]]
+        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
+        [[ end ]]
       }
 
-      resources {
-        cpu    = [[ .my.resources.cpu ]]
-        memory = [[ .my.resources.memory ]]
-      }
+      [[ template "resources" . ]]
     }
   }
 }

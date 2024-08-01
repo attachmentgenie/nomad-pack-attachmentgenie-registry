@@ -5,12 +5,6 @@ variable "job_name" {
   default = ""
 }
 
-variable "namespace" {
-  description = "The namespace where jobs will be deployed"
-  type        = string
-  default     = ""
-}
-
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -20,11 +14,57 @@ variable "region" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
 }
 
-variable "count" {
-  description = "The number of app instances to deploy"
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
+}
+
+variable "task_resources" {
+  description = "The resources to assign to the OpenTelemetry Collector task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 256
+    memory = 512
+  }
+}
+
+variable "app_count" {
+  description = "Number of instances to deploy"
   type        = number
   default     = 1
 }
@@ -44,35 +84,20 @@ variable "consul_service_name" {
 variable "consul_service_tags" {
   description = "The consul service name for the pgsql application"
   type        = list(string)
-  default = []
+  default     = []
 }
 
 variable "env_vars" {
-  description = "env vars to inject"
-  type = list(object({
-    key   = string
-    value = string
-  }))
-  default = [
-    {key = "POSTGRES_PASSWORD", value = "mysecretpassword"},
-  ]
-}
-
-variable "resources" {
-  description = "The resource to assign to the pgsql service task."
-  type = object({
-    cpu    = number
-    memory = number
-  })
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
   default = {
-    cpu    = 200,
-    memory = 256
+    "POSTGRES_PASSWORD" : "dr0wss@pt3rc3syM",
   }
 }
 
 variable "pgsql_task" {
   description = "Details configuration options for the promlens task."
-  type        = object({
+  type = object({
     driver  = string
     image   = string
     version = string
@@ -82,16 +107,4 @@ variable "pgsql_task" {
     image   = "postgres",
     version = "latest",
   }
-}
-
-variable "use_patroni" {
-  description = "If you want to use patroni to build a cluster"
-  type        = bool
-  default     = false
-}
-
-variable "patroni_yaml" {
-  description = "The patroni configuration to pass to the task."
-  type        = string
-  default     = ""
 }

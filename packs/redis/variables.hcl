@@ -5,12 +5,6 @@ variable "job_name" {
   default = ""
 }
 
-variable "namespace" {
-  description = "The namespace where jobs will be deployed"
-  type        = string
-  default     = ""
-}
-
 variable "region" {
   description = "The region where jobs will be deployed"
   type        = string
@@ -20,7 +14,53 @@ variable "region" {
 variable "datacenters" {
   description = "A list of datacenters in the region which are eligible for task placement"
   type        = list(string)
-  default     = ["dc1"]
+  default     = ["*"]
+}
+
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
+  type        = number
+  default     = 50
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
+}
+
+variable "task_resources" {
+  description = "The resources to assign to the OpenTelemetry Collector task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 256
+    memory = 512
+  }
 }
 
 variable "app_count" {
@@ -32,30 +72,18 @@ variable "app_count" {
 // Redis Group-Level Variables
 variable "update" {
   description = "Job update parameters"
-  type        = object({
+  type = object({
     min_healthy_time  = string
     healthy_deadline  = string
     progress_deadline = string
     auto_revert       = bool
   })
-  default     = {
+  default = {
     min_healthy_time  = "10s",
     healthy_deadline  = "5m",
     progress_deadline = "10m",
     auto_revert       = true,
   }
-}
-
-variable "use_host_volume" {
-  description = "Use a host volume as defined in the Nomad client configuration"
-  type        = bool
-  default     = false
-}
-
-variable "redis_volume" {
-  description = "The volume name defined in the Nomad agent configuration"
-  type        = string
-  default     = "redis"
 }
 
 variable "register_consul_service" {
@@ -79,7 +107,7 @@ variable "consul_service_port" {
 variable "consul_tags" {
   description = "Tags to use for job"
   type        = list(string)
-  default     = [
+  default = [
     "database"
   ]
 }
@@ -117,14 +145,13 @@ variable "image" {
   default     = "redis:latest"
 }
 
-variable "resources" {
-  description = "Resources to assign this job"
-  type        = object({
-    cpu    = number
-    memory = number
-  })
-  default     = {
-    cpu    = 500,
-    memory = 500
-  }
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
 }

@@ -1,10 +1,15 @@
 app {
-  url    = "https://www.postgresql.org/"
-  author = "postgresql"
+  url = "https://www.postgresql.org/"
 }
+
 pack {
   name        = "pgsql"
   description = "PostgreSQL, also known as Postgres, is a free and open-source relational database management system"
-  url         = "https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry/pgsql"
-  version     = "0.1.0"
+  version     = "0.2.0"
+}
+
+dependency "attachmentgenie_pack_helpers" {
+  alias  = "attachmentgenie_pack_helpers"
+  source = "git::https://github.com/attachmentgenie/nomad-pack-attachmentgenie-registry.git//packs/attachmentgenie_pack_helpers"
+  ref    = "92d4feb5"
 }

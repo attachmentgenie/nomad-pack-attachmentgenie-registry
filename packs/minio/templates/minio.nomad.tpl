@@ -1,20 +1,14 @@
 job [[ template "job_name" . ]] {
-  [[ template "region" . ]]
-  [[ template "namespace" . ]]
-  datacenters = [[ .my.datacenters  | toStringList ]]
+  [[ template "placement" . ]]
   type = "service"
 
   group "minio" {
-    count = [[ .my.count ]]
-
-    volume "minio" {
-      type      = "host"
-      read_only = false
-      source    = "minio"
-    }
+    count = [[ var "app_count" . ]]
 
     network {
+      [[ if var "register_consul_service" . ]]
       mode = "bridge"
+      [[ end ]]
       port "s3" {
         to = 9000
       }
@@ -23,10 +17,12 @@ job [[ template "job_name" . ]] {
       }
     }
 
-    [[ if .my.register_consul_service ]]
+    [[ if var "register_consul_service" . ]]
     service {
-      name = "[[ .my.consul_service_name ]]"
-      tags = [[ .my.consul_service_tags | toStringList ]]
+      name = "[[ var "consul_service_name" . ]]"
+      [[ range $tag := var "consul_service_tags" . ]]
+      tags = [[ var "consul_service_tags" . | toStringList ]]
+      [[ end ]]
       port = "s3"
       check {
         name     = "alive"
@@ -46,17 +42,21 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
+    [[ template "volume" . ]]
+
     task "server" {
       driver = "docker"
 
+      [[ if var "volume_name" . ]]
       volume_mount {
         volume      = "minio"
         destination = "/data"
         read_only   = false
       }
+      [[- end ]]
 
       config {
-        image = "quay.io/minio/minio:[[ .my.version_tag ]]"
+        image = "quay.io/minio/minio:[[ var "version_tag" . ]]"
         ports = ["s3","console"]
         args = [
           "server",
@@ -67,10 +67,12 @@ job [[ template "job_name" . ]] {
       }
 
       env {
-        [[- range $var := .my.env_vars ]]
-        [[ $var.key ]] = "[[ $var.value ]]"
-        [[- end ]]
+        [[ range $key, $var := var "env_vars" . ]]
+        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
+        [[ end ]]
       }
+
+      [[ template "resources" . ]]
     }
   }
 }
