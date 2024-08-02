@@ -63,59 +63,35 @@ variable "task_resources" {
   }
 }
 
-variable "plugins" {
-  description = "A list of jenkins plugins to install. See https://github.com/jenkinsci/docker/blob/master/README.md#plugin-installation-manager-cli-preview-1 for more info."
-  type        = list(string)
-}
-
-variable "jasc_config" {
-  description = "Use the Jenkins as Code plugin to configure jenkins. This requires the configuration-as-code plugin to be installed."
-  type        = string
-}
-
-variable "image_name" {
-  description = "The docker image name."
-  type        = string
-  default     = "jenkins/jenkins"
-}
-
-variable "image_tag" {
-  description = "The docker image tag."
-  type        = string
-  default     = "lts-jdk17"
-}
-
 variable "register_consul_service" {
-  description = "If you want to register a consul service for the job."
+  description = "If you want to register a consul service for the job"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "consul_service_name" {
-  description = "The consul service name for the application."
+  description = "The consul service name for the atc application"
   type        = string
-  default     = "jenkins"
+  default     = "atc"
 }
 
 variable "consul_service_tags" {
-  description = "The consul service name for the application."
+  description = "The consul service name for the atc application"
   type        = list(string)
   default     = []
 }
 
-variable "volume_name" {
-  description = "The name of the volume you want Jenkins to use."
-  type        = string
+variable "task" {
+  description = "Details configuration options for the promlens task."
+  type = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "ghcr.io/attachmentgenie/atc",
+    version = "latest",
+  }
 }
 
-variable "volume_type" {
-  description = "The type of the volume you want Jenkins to use."
-  type        = string
-  default     = "host"
-}
-
-variable "docker_jenkins_env_vars" {
-  type        = map(string)
-  description = "Environment variables to pass to Docker container."
-  default     = {}
-}

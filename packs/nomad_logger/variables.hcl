@@ -26,13 +26,13 @@ variable "namespace" {
 variable "node_pool" {
   description = "The node_pool where the job should be placed."
   type        = string
-  default     = "default"
+  default     = "all"
 }
 
 variable "priority" {
   description = "The priority value the job will be given"
   type        = number
-  default     = 50
+  default     = 100
 }
 
 variable "task_constraints" {
@@ -52,53 +52,49 @@ variable "task_constraints" {
 }
 
 variable "task_resources" {
-  description = "Resources used by jenkins task."
+  description = "The resources to assign to the OpenTelemetry Collector task."
   type = object({
     cpu    = number
     memory = number
   })
   default = {
-    cpu    = 1000,
-    memory = 1024,
+    cpu    = 100
+    memory = 25
   }
 }
 
-variable "plugins" {
-  description = "A list of jenkins plugins to install. See https://github.com/jenkinsci/docker/blob/master/README.md#plugin-installation-manager-cli-preview-1 for more info."
-  type        = list(string)
-}
-
-variable "jasc_config" {
-  description = "Use the Jenkins as Code plugin to configure jenkins. This requires the configuration-as-code plugin to be installed."
-  type        = string
-}
-
-variable "image_name" {
-  description = "The docker image name."
-  type        = string
-  default     = "jenkins/jenkins"
-}
-
-variable "image_tag" {
-  description = "The docker image tag."
-  type        = string
-  default     = "lts-jdk17"
+variable "metrics_exporter_port" {
+  description = "The Nomad client port that routes to metrics endpoint."
+  type        = number
+  default     = 2112
 }
 
 variable "register_consul_service" {
-  description = "If you want to register a consul service for the job."
+  description = "If you want to register a consul service for the job"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "consul_service_name" {
-  description = "The consul service name for the application."
+  description = "The consul service name for the nomad logger application"
   type        = string
-  default     = "jenkins"
+  default     = "nomad-logger"
 }
 
-variable "consul_service_tags" {
-  description = "The consul service name for the application."
+variable "task" {
+  description = "Options for the task"
+  type = object({
+    image   = string
+    version = string
+  })
+  default = {
+    image   = "attachmentgenie/nomad-logger"
+    version = "latest"
+  }
+}
+
+variable "task_service_tags" {
+  description = "The consul service name for the nomad logger application"
   type        = list(string)
   default     = []
 }
@@ -106,16 +102,11 @@ variable "consul_service_tags" {
 variable "volume_name" {
   description = "The name of the volume you want Jenkins to use."
   type        = string
+  default     = "promtail-configs"
 }
 
 variable "volume_type" {
   description = "The type of the volume you want Jenkins to use."
   type        = string
   default     = "host"
-}
-
-variable "docker_jenkins_env_vars" {
-  type        = map(string)
-  description = "Environment variables to pass to Docker container."
-  default     = {}
 }

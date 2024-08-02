@@ -6,11 +6,15 @@ See the [documentation on Writing Packs and Registries](https://github.com/hashi
 
 This registry current holds packs for the following tools
 
+* Atc
+* Example
 * Jenkins  (fork from community registry)
 * Mailpit
 * Minio
-* MYSQL
+* MySQL
 * Nomad Autoscaler  (fork from community registry)
+* Nomad Events Sink
+* Nomad Logger
 * Opensearch
 * Postgresql
 * Redis  (fork from community registry)

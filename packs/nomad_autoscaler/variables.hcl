@@ -74,7 +74,7 @@ variable "autoscaler_agent_task" {
   default = {
     count                = 3,
     driver               = "docker",
-    version              = "0.4.4",
+    version              = "latest",
     additional_cli_args  = ["-nomad-address=http://$${attr.unique.network.ip-address}:4646", "-http-bind-address=0.0.0.0", "-high-availability-enabled"],
     config_files         = [],
     scaling_policy_files = []
