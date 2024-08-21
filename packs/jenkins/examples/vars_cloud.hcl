@@ -1,4 +1,4 @@
-docker_jenkins_env_vars = {
+env_vars = {
   "java_opts" : "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false",
 }
 jasc_config             = <<EOF
@@ -38,7 +38,7 @@ jenkins:
                       "Name": "jenkins-worker",
                       "Driver": "docker",
                       "Config": {
-                        "image": "jenkins/inbound-agent:jdk17"
+                        "image": "jenkins/inbound-agent:jdk21"
                       },
                       "Env": {
                         "JENKINS_URL": "http://{{ env "NOMAD_ADDR_http" }}",

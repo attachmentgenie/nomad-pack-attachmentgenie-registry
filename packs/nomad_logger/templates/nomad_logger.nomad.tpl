@@ -43,11 +43,7 @@ job [[ template "job_name" . ]] {
         ports = ["metrics"]
       }
 
-      env {
-        METRICS_PORT = [[ var "metrics_exporter_port" . ]]
-        NOMAD_ADDR = "http://${attr.nomad.advertise.address}"
-        PROMTAIL_TARGETS_FILE = "/target/nomad-logger.yaml"
-      }
+      [[ template "env_upper" . ]]
 
       [[ if var "volume_name" . ]]
       volume_mount {

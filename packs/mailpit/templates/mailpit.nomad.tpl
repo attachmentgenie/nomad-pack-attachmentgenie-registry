@@ -44,11 +44,7 @@ job [[ template "job_name" . ]] {
         ports   = ["http","smtp"]
       }
 
-      env {
-        [[ range $key, $var := var "env_vars" . ]]
-        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
-        [[ end ]]
-      }
+      [[ template "env_upper" . ]]
 
       [[ template "resources" . ]]
     }

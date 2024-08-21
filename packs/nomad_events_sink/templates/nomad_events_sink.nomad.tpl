@@ -25,7 +25,7 @@ job [[ template "job_name" . ]] {
         [[- end ]]
       }
       [[ template "template_config_toml" . ]]
-      [[ template "env_vars" . ]]
+      [[ template "env_upper" . ]]
 
       [[ template "resources" . ]]
     }

@@ -1,4 +1,4 @@
-docker_jenkins_env_vars = {
+env_vars = {
   "java_opts" : "-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false",
 }
 jasc_config             = <<EOF

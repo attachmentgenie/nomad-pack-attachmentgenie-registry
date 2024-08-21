@@ -66,18 +66,22 @@ variable "task_resources" {
 variable "task_config" {
   description = "Options for the task"
   type = object({
-    env_vars               = map(string)
     image                  = string
     nomad_events_sink_toml = string
     version                = string
   })
   default = {
-    env_vars = {
-      NOMAD_EVENTS_SINK_app__data_dir = "/alloc/data/"
-      NOMAD_ADDR                      = "http://$${attr.nomad.advertise.address}"
-    }
     image                  = "ghcr.io/attachmentgenie/nomad-events-sink"
     nomad_events_sink_toml = ""
     version                = "latest"
+  }
+}
+
+variable "env_vars" {
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
+  default     = {
+    "NOMAD_EVENTS_SINK_app__data_dir" : "/alloc/data/",
+    "NOMAD_ADDR" : "http://$${attr.nomad.advertise.address}",
   }
 }

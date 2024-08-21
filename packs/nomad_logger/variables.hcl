@@ -110,3 +110,11 @@ variable "volume_type" {
   type        = string
   default     = "host"
 }
+
+variable "env_vars" {
+  type        = map(string)
+  description = "Environment variables to pass to Docker container."
+  default     = {
+    "NOMAD_ADDR" : "http://$${attr.nomad.advertise.address}",
+  }
+}

@@ -61,11 +61,7 @@ job [[ template "job_name" . ]] {
         ports   = ["http","performance"]
       }
 
-      env = {
-        [[ range $key, $var := var "env_vars" . ]]
-        [[if ne (len $var) 0 ]][[ $key | quote ]] = [[ $var | quote ]][[ end ]]
-        [[ end ]]
-      }
+      [[ template "env_dots" . ]]
 
       [[ template "resources" . ]]
     }

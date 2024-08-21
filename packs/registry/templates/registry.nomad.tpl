@@ -78,12 +78,7 @@ EOF
         ports = ["ui"]
       }
 
-      env {
-        REGISTRY_URL = "http://${NOMAD_HOST_ADDR_http}"
-        [[ range $key, $var := var "ui_env_vars" . ]]
-        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
-        [[ end ]]
-      }
+      [[ template "env_upper" . ]]
 
       [[ template "resources" . ]]
     }

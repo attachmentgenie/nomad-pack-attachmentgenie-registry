@@ -123,10 +123,11 @@ variable "registry_task" {
   }
 }
 
-variable "ui_env_vars" {
-  description = "env vars to inject"
+variable "env_vars" {
+  description = "Environment variables to pass to Docker container."
   type        = map(string)
   default = {
+    "REGISTRY_URL" : "http://$${NOMAD_HOST_ADDR_http}",
     "DELETE_IMAGES" : true,
     "SINGLE_REGISTRY" : true,
   }

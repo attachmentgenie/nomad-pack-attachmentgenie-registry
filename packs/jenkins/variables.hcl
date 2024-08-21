@@ -82,7 +82,7 @@ variable "image_name" {
 variable "image_tag" {
   description = "The docker image tag."
   type        = string
-  default     = "lts-jdk17"
+  default     = "lts-jdk21"
 }
 
 variable "register_consul_service" {
@@ -114,7 +114,7 @@ variable "volume_type" {
   default     = "host"
 }
 
-variable "docker_jenkins_env_vars" {
+variable "env_vars" {
   type        = map(string)
   description = "Environment variables to pass to Docker container."
   default     = {}

@@ -127,11 +127,7 @@ EOF
         [[ end ]]
       }
 
-      env {
-        [[ range $key, $var := var "docker_jenkins_env_vars" . ]]
-        [[if ne (len $var) 0 ]][[ $key | upper ]] = [[ $var | quote ]][[ end ]]
-        [[ end ]]
-      }
+      [[ template "env_upper" . ]]
 
       [[ if var "jasc_config" . ]]
       template {
