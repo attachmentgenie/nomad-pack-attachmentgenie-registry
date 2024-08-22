@@ -63,32 +63,38 @@ variable "task_resources" {
   }
 }
 
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
+variable "register_service" {
+  description = "If you want to register a service for the job"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "consul_registry_service_name" {
-  description = "The consul service name for the registry application"
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "registry_service_name" {
+  description = "The service name for the registry application"
   type        = string
   default     = "registry"
 }
 
-variable "consul_ui_service_name" {
-  description = "The consul service name for the registry application"
+variable "ui_service_name" {
+  description = "The service name for the registry application"
   type        = string
   default     = "images"
 }
 
-variable "consul_registry_service_tags" {
-  description = "The consul service name for the registry application"
+variable "registry_service_tags" {
+  description = "The service name for the registry application"
   type        = list(string)
   default     = []
 }
 
-variable "consul_ui_service_tags" {
-  description = "The consul service name for the registry application"
+variable "ui_service_tags" {
+  description = "The service name for the registry application"
   type        = list(string)
   default     = []
 }

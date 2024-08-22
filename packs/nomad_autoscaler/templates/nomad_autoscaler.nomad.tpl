@@ -14,9 +14,10 @@ job [[ template "job_name" . ]] {
 
     [[- if var "autoscaler_agent_task_service.enabled" . ]]
     service {
-      name = [[ var "autoscaler_agent_task_service.service_name" . | quote ]]
-      port = [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]]
-      tags = [[ var "autoscaler_agent_task_service.service_tags" . | toStringList ]]
+      name     = [[ var "autoscaler_agent_task_service.service_name" . | quote ]]
+      port     = [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]]
+      provider = [[ var "autoscaler_agent_task_service.service_provider" . | quote ]]
+      tags     = [[ var "autoscaler_agent_task_service.service_tags" . | toStringList ]]
 
       check {
         type     = [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]]
@@ -25,6 +26,7 @@ job [[ template "job_name" . ]] {
         timeout  = [[ var "autoscaler_agent_task_service.check_timeout" . | quote ]]
       }
 
+      [[- if var "autoscaler_agent_task_service.connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
@@ -39,6 +41,7 @@ job [[ template "job_name" . ]] {
           }
         }
       }
+      [[ end ]]
     }
     [[- end ]]
 

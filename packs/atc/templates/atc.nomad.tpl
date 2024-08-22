@@ -5,7 +5,7 @@ job [[ template "job_name" . ]] {
   group [[ template "job_name" . ]] {
 
     network {
-      [[ if var "register_consul_service" . ]]
+      [[ if var "register_service" . ]]
       mode = "bridge"
       [[ end ]]
       port "http" {
@@ -13,13 +13,14 @@ job [[ template "job_name" . ]] {
       }
     }
 
-    [[ if var "register_consul_service" . ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ var "consul_service_name" . ]]"
-      [[ range $tag := var "consul_service_tags" . ]]
-      tags = [[ var "consul_service_tags" . | toStringList ]]
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
       [[ end ]]
-      port = "http"
+      port     = "http"
       check {
         name     = "alive"
         type     = "http"

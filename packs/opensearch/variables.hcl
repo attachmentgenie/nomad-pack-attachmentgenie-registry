@@ -69,20 +69,32 @@ variable "app_count" {
   default     = 1
 }
 
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
+variable "register_service" {
+  description = "If you want to register a service for the job."
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "consul_service_name" {
-  description = "The consul service name for the opensearch application"
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
+  description = "The service name for the application."
   type        = string
   default     = "opensearch"
 }
 
-variable "consul_service_tags" {
-  description = "The consul service name for the opensearch application"
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the application."
   type        = list(string)
   default     = []
 }

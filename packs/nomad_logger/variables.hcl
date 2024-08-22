@@ -69,14 +69,14 @@ variable "metrics_exporter_port" {
   default     = 2112
 }
 
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
+variable "register_service" {
+  description = "If you want to register a service for the job"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "consul_service_name" {
-  description = "The consul service name for the nomad logger application"
+variable "service_name" {
+  description = "The service name for the nomad logger application"
   type        = string
   default     = "nomad-logger"
 }
@@ -94,7 +94,7 @@ variable "task" {
 }
 
 variable "task_service_tags" {
-  description = "The consul service name for the nomad logger application"
+  description = "The service name for the nomad logger application"
   type        = list(string)
   default     = []
 }

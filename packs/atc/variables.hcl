@@ -63,20 +63,26 @@ variable "task_resources" {
   }
 }
 
-variable "register_consul_service" {
-  description = "If you want to register a consul service for the job"
+variable "register_service" {
+  description = "If you want to register a service for the job"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "consul_service_name" {
-  description = "The consul service name for the atc application"
+variable "service_name" {
+  description = "The service name for the atc application"
   type        = string
   default     = "atc"
 }
 
-variable "consul_service_tags" {
-  description = "The consul service name for the atc application"
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the atc application"
   type        = list(string)
   default     = []
 }

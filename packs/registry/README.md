@@ -25,7 +25,7 @@ service reads from.
 
 Optionally, it can configure a Consul service.
 
-If the `register_consul_service` is unset or set to true, the Consul service
+If the `register_service` is unset or set to true, the Consul service
 will be registered.
 
 Several load balancers in the the [Nomad Pack Community Registry][pack-registry]
@@ -33,11 +33,11 @@ are configured to connect to this service by default.
 
 The [NGINX][pack-nginx] and [HAProxy][pack-haproxy] packs are configured to
 balance the Consul service `registry-service`, which is the default value
-for the `consul_service_name` variable.
+for the `service_name` variable.
 
 The [Fabio][pack-fabio] and [Traefik][pack-traefik] packs are configured to
 search for Consul services with the tags found in the default value of the
-`consul_service_tags` variable.
+`service_tags` variable.
 
 ## Variables
 
@@ -50,11 +50,11 @@ search for Consul services with the tags found in the default value of the
 - `datacenters` (list of strings) - A list of datacenters in the region which
   are eligible for task placement
 - `region` (string) - The region where jobs will be deployed
-- `register_consul_service` (bool) - If you want to register a consul service
+- `register_service` (bool) - If you want to register a service
   for the job
-- `consul_service_tags` (list of string) - The consul service name for the
+- `service_tags` (list of string) - The service name for the
   registry application
-- `consul_service_name` (string) - The consul service name for the registry
+- `service_name` (string) - The service name for the registry
   application
 
 [pack-registry]: https://github.com/hashicorp/nomad-pack-community-registry

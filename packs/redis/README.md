@@ -17,9 +17,9 @@ Default (Vanilla) Installation:
 ## Available Variables
 `app_count` (number) - Number of instances to deploy
 
-`consul_service_name` (string) - Name used by Consul, if registering the job in Consul
+`service_name` (string) - Name used by Consul, if registering the job in Consul
 
-`consul_service_port` (string) - Port used by Consul, if registering the job in Consul
+`service_port` (string) - Port used by Consul, if registering the job in Consul
 
 `consul_tags` (list of string) - Tags to use for job
 
@@ -39,7 +39,7 @@ Default (Vanilla) Installation:
 
 `region` (string) - Region where the job should be placed.
 
-`register_consul_service` (bool) - Register this job in Consul
+`register_service` (bool) - Register this job in Consul
 
 `resources` (object) - Resources to assign this job
 

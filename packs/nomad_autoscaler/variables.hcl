@@ -96,18 +96,22 @@ variable "task_resources" {
 variable "autoscaler_agent_task_service" {
   description = "Configuration options of the Nomad Autoscaler service and check."
   type = object({
-    enabled        = bool
-    service_name   = string
-    service_tags   = list(string)
-    check_interval = string
-    check_timeout  = string
+    connect_enabled  = bool
+    enabled          = bool
+    service_name     = string
+    service_provider = string
+    service_tags     = list(string)
+    check_interval   = string
+    check_timeout    = string
   })
   default = {
-    enabled        = false
-    service_name   = "nomad-autoscaler",
-    service_tags   = [],
-    check_interval = "3s",
-    check_timeout  = "1s",
+    connect_enabled  = false
+    enabled          = false
+    service_name     = "nomad-autoscaler",
+    service_provider = consul,
+    service_tags     = [],
+    check_interval   = "3s",
+    check_timeout    = "1s",
   }
 }
 

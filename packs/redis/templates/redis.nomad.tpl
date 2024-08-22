@@ -6,7 +6,7 @@ job [[ template "job_name" . ]] {
     count = [[ var "app_count" . ]]
 
     network {
-      [[ if var "register_consul_service" . ]]
+      [[ if var "register_service" . ]]
       mode = "bridge"
       [[ end ]]
       port "db" {
@@ -21,21 +21,12 @@ job [[ template "job_name" . ]] {
       auto_revert       = [[ var "update.auto_revert" . ]]
     }
 
-    [[- if var "register_consul_service" . ]]
+    [[- if var "register_service" . ]]
     service {
-      name = [[ var "consul_service_name" . | quote ]]
-      port = "db"
-      tags = [[ var "consul_tags" . | toStringList ]]
-
-      connect {
-        sidecar_service {
-          tags = [""]
-          proxy {
-            local_service_port = [[ var "consul_service_port" . | quote ]]
-          }
-        }
-      }
-
+      name     = [[ var "service_name" . | quote ]]
+      port     = "db"
+      provider = "[[ var "service_provider" . ]]"
+      tags     = [[ var "consul_tags" . | toStringList ]]
       [[- if .my.has_health_check ]]
       check {
         name     = "redis"
@@ -45,6 +36,16 @@ job [[ template "job_name" . ]] {
         timeout  = [[ var "health_check.timeout" . | quote ]]
       }
       [[- end ]]
+      [[ if var "service_connect_enabled" . ]]
+      connect {
+        sidecar_service {
+          tags = [""]
+          proxy {
+            local_service_port = [[ var "service_port" . | quote ]]
+          }
+        }
+      }
+      [[ end ]]
     }
     [[- end ]]
 

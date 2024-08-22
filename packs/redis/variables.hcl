@@ -86,22 +86,34 @@ variable "update" {
   }
 }
 
-variable "register_consul_service" {
+variable "register_service" {
   description = "Register this job in Consul"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "consul_service_name" {
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
   description = "Name used by Consul, if registering the job in Consul"
   type        = string
   default     = "redis"
 }
 
-variable "consul_service_port" {
+variable "service_port" {
   description = "Port used by Consul, if registering the job in Consul"
   type        = string
   default     = "6379"
+}
+
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
 }
 
 variable "consul_tags" {

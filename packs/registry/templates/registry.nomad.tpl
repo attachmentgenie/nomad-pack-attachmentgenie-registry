@@ -13,11 +13,12 @@ job [[ template "job_name" . ]] {
       [[ end ]]
     }
 
-    [[ if var "register_consul_service" . ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ var "consul_registry_service_name" . ]]"
-      tags = [[ var "consul_registry_service_tags" . | toStringList ]]
-      port = "http"
+      name     = "[[ var "registry_service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      tags     = [[ var "registry_service_tags" . | toStringList ]]
+      port     = "http"
       check {
         type     = "http"
         path     = "/"
@@ -27,9 +28,10 @@ job [[ template "job_name" . ]] {
     }
     
     service {
-      name = "[[ var "consul_ui_service_name" . ]]"
-      tags = [[ var "consul_ui_service_tags" . | toStringList ]]
-      port = "ui"
+      name     = "[[ var "ui_service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      tags     = [[ var "ui_service_tags" . | toStringList ]]
+      port     = "ui"
       check {
         type     = "http"
         path     = "/"

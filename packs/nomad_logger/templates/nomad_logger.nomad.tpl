@@ -4,7 +4,7 @@ job [[ template "job_name" . ]] {
 
   group "nomad-logger" {
     network {
-      [[ if var "register_consul_service" . ]]
+      [[ if var "register_service" . ]]
       mode = "bridge"
       [[ end ]]
       port "metrics" {
@@ -12,11 +12,14 @@ job [[ template "job_name" . ]] {
       }
     }
 
-    [[ if var "register_consul_service" . ]]
+    [[ if var "register_service" . ]]
     service {
-      name = "[[ var "consul_service_name" . ]]"
-      tags = [[ var "task_service_tags" . | toStringList ]]
-      port = "metrics"
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "metrics"
       check {
         name     = "alive"
         type     = "http"
