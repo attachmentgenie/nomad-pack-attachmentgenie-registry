@@ -41,6 +41,8 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
+    [[ template "volume" . ]]
+
     restart {
       attempts = 2
       interval = "30m"
@@ -60,6 +62,14 @@ job [[ template "job_name" . ]] {
       }
 
       [[ template "resources" . ]]
+
+      [[ if var "volume_name" . ]]
+      volume_mount {
+        volume      = "[[ var "volume_name" . ]]"
+        destination = "/var/lib/registry"
+        read_only   = false
+      }
+      [[- end ]]
 
       template {
         data = <<EOF

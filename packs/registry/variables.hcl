@@ -99,6 +99,29 @@ variable "ui_service_tags" {
   default     = []
 }
 
+variable "volume_access_mode" {
+  description = "Defines whether a volume should be available concurrently."
+  type        = string
+  default     = "multi-node-multi-writer"
+}
+
+variable "volume_attachment_mode" {
+  description = "The storage API that will be used by the volume."
+  type        = string
+  default     = "file-system"
+}
+
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
+}
+
 variable "registry_config" {
   description = "The yaml configuration for the registry"
   type        = string
@@ -124,7 +147,7 @@ variable "registry_task" {
   })
   default = {
     driver  = "docker",
-    image   = "distribution/registry",
+    image   = "registry",
     version = "latest",
   }
 }
