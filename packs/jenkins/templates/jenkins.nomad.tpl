@@ -6,7 +6,10 @@ job [[ template "job_name" . ]] {
 
     network {
       [[ if var "register_service" . ]]
+      [[  $service_provider := var "service_provider" . ]]
+      [[ if eq $service_provider "consul" ]]
       mode = "bridge"
+      [[ end ]]
       [[ end ]]
       port "http" {
         to = 8080
@@ -82,10 +85,11 @@ job [[ template "job_name" . ]] {
     task "install-plugins" {
       driver = "docker"
       config {
-        image   = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
-        command = "jenkins-plugin-cli"
-        args    = ["-f", "/var/jenkins_home/plugins.txt", "--plugin-download-directory", "/var/jenkins_home/plugins/"]
-        volumes = [
+        image      = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        force_pull = true
+        command    = "jenkins-plugin-cli"
+        args       = ["-f", "/var/jenkins_home/plugins.txt", "--plugin-download-directory", "/var/jenkins_home/plugins/"]
+        volumes    = [
           "local/plugins.txt:/var/jenkins_home/plugins.txt",
         ]
       }
@@ -120,10 +124,11 @@ EOF
       driver = "docker"
 
       config {
-        image = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
-        ports = ["http","jnlp"]
+        image      = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        force_pull = true
+        ports      = ["http","jnlp"]
         [[ if var "jasc_config" . ]]
-        volumes = [
+        volumes    = [
           "local/jasc.yaml:/var/jenkins_home/jenkins.yaml",
         ]
         [[ end ]]

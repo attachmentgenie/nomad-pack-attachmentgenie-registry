@@ -2,7 +2,7 @@ job [[ template "job_name" . ]] {
   [[ template "placement" . ]]
   type = "service"
 
-  group "mysql" {
+  group [[ template "job_name" . ]] {
 
     network {
       [[ if var "register_service" . ]]
@@ -11,8 +11,8 @@ job [[ template "job_name" . ]] {
       mode = "bridge"
       [[ end ]]
       [[ end ]]
-      port "mysql" {
-        to = 3306
+      port "http" {
+        to = 80
       }
     }
 
@@ -23,17 +23,18 @@ job [[ template "job_name" . ]] {
       [[ range $tag := var "service_tags" . ]]
       tags     = [[ var "service_tags" . | toStringList ]]
       [[ end ]]
-      port     = "mysql"
-      connect {
-        sidecar_service {
-          tags = [""]
-          proxy {
-            local_service_port = 3306
-          }
-        }
+      port     = "http"
+      check {
+        name     = "alive"
+        type     = "http"
+        path     = "/health"
+        interval = "10s"
+        timeout  = "2s"
       }
     }
     [[ end ]]
+
+    [[ template "volume" . ]]
 
     restart {
       attempts = 2
@@ -43,16 +44,22 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image = "mysql:[[ var "version_tag" . ]]"
-        ports = ["mysql"]
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
+        ports = ["http"]
       }
 
       [[ template "env_upper" . ]]
 
-      [[ template "resources" . ]]
+      [[ if var "volume_name" . ]]
+      volume_mount {
+        volume      = "[[ var "volume_name" . ]]"
+        destination = "/config"
+        read_only   = false
+      }
+      [[- end ]]
     }
   }
 }
