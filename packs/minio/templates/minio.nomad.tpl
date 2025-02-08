@@ -51,20 +51,12 @@ job [[ template "job_name" . ]] {
     [[ template "volume" . ]]
 
     task "server" {
-      driver = "docker"
-
-      [[ if var "volume_name" . ]]
-      volume_mount {
-        volume      = "minio"
-        destination = "/data"
-        read_only   = false
-      }
-      [[- end ]]
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image = "quay.io/minio/minio:[[ var "version_tag" . ]]"
+        image = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         ports = ["s3","console"]
-        args = [
+        args  = [
           "server",
           "/data",
           "--console-address",
@@ -75,6 +67,14 @@ job [[ template "job_name" . ]] {
       [[ template "env_upper" . ]]
 
       [[ template "resources" . ]]
+
+      [[ if var "volume_name" . ]]
+      volume_mount {
+        volume      = "minio"
+        destination = "/data"
+        read_only   = false
+      }
+      [[- end ]]
     }
   }
 }

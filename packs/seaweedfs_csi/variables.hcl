@@ -63,16 +63,18 @@ variable "task_resources" {
   }
 }
 
-variable "image_name" {
-  description = "The docker image name."
-  type        = string
-  default     = "chrislusf/seaweedfs-csi-driver"
-}
-
-variable "image_tag" {
-  description = "The docker image tag."
-  type        = string
-  default     = "v1.2.2"
+variable "task" {
+  description = "Details configuration options for the seaweedfs_csi task."
+  type = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "chrislusf/seaweedfs-csi-driver"
+    version = "latest",
+  }
 }
 
 variable "cli_args" {

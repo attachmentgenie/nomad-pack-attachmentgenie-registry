@@ -47,8 +47,6 @@ job [[ template "job_name" . ]] {
     }
     [[ end ]]
 
-    [[ template "volume" . ]]
-
     restart {
       attempts = 2
       interval = "30m"
@@ -56,14 +54,11 @@ job [[ template "job_name" . ]] {
       mode = "fail"
     }
 
+    [[ template "volume" . ]]
+
     [[ if var "volume_name" . ]]
     task "chown" {
-      lifecycle {
-        hook    = "prestart"
-        sidecar = false
-      }
-
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
         image   = "busybox:stable"
@@ -71,10 +66,15 @@ job [[ template "job_name" . ]] {
         args    = ["-c", "chown -R 1000:1000 /var/jenkins_home"]
       }
 
+      lifecycle {
+        hook    = "prestart"
+        sidecar = false
+      }
+
       [[ template "resources" . ]]
 
       volume_mount {
-        volume      = "[[ var "volume_name" . ]]"
+        volume      = [[ var "volume_name" . | quote ]]
         destination = "/var/jenkins_home"
         read_only   = false
       }
@@ -83,9 +83,9 @@ job [[ template "job_name" . ]] {
 
     [[ if var "plugins" . ]]
     task "install-plugins" {
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
       config {
-        image      = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        image      = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         force_pull = true
         command    = "jenkins-plugin-cli"
         args       = ["-f", "/var/jenkins_home/plugins.txt", "--plugin-download-directory", "/var/jenkins_home/plugins/"]
@@ -121,10 +121,10 @@ EOF
     [[- end ]]
 
     task [[ template "job_name" . ]] {
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image      = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        image      = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         force_pull = true
         ports      = ["http","jnlp"]
         [[ if var "jasc_config" . ]]

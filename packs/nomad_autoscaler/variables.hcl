@@ -35,6 +35,17 @@ variable "priority" {
   default     = 80
 }
 
+variable "task_artifacts" {
+  description = "Define external artifacts for the autoscaler."
+  type = list(object({
+    source      = string
+    destination = string
+    mode        = string
+    options     = map(string)
+  }))
+  default = []
+}
+
 variable "task_constraints" {
   description = "Constraints to apply to the entire job."
   type = list(object({
@@ -51,20 +62,9 @@ variable "task_constraints" {
   ]
 }
 
-variable "autoscaler_agent_network" {
-  description = "The Nomad Autoscaler network configuration options."
-  type = object({
-    autoscaler_http_port_label = string
-  })
-  default = {
-    autoscaler_http_port_label = "http",
-  }
-}
-
-variable "autoscaler_agent_task" {
+variable "task" {
   description = "Details configuration options for the Nomad Autoscaler agent task."
   type = object({
-    count                = number
     driver               = string
     version              = string
     additional_cli_args  = list(string)
@@ -72,8 +72,8 @@ variable "autoscaler_agent_task" {
     scaling_policy_files = list(string)
   })
   default = {
-    count                = 3,
     driver               = "docker",
+    image                = "hashicorp/nomad-autoscaler",
     version              = "latest",
     additional_cli_args  = ["-nomad-address=http://$${attr.unique.network.ip-address}:4646", "-http-bind-address=0.0.0.0", "-high-availability-enabled"],
     config_files         = [],
@@ -93,29 +93,43 @@ variable "task_resources" {
   }
 }
 
-variable "autoscaler_agent_task_service" {
-  description = "Configuration options of the Nomad Autoscaler service and check."
-  type = object({
-    connect_enabled  = bool
-    enabled          = bool
-    service_name     = string
-    service_provider = string
-    service_tags     = list(string)
-    check_interval   = string
-    check_timeout    = string
-  })
-  default = {
-    connect_enabled  = false
-    enabled          = false
-    service_name     = "nomad-autoscaler",
-    service_provider = consul,
-    service_tags     = [],
-    check_interval   = "3s",
-    check_timeout    = "1s",
-  }
+variable "app_count" {
+  description = "Number of instances to deploy"
+  type        = number
+  default     = 3
 }
 
-variable "autoscaler_agent_task_upstreams" {
+variable "register_service" {
+  description = "If you want to register a service for the job"
+  type        = bool
+  default     = false
+}
+
+variable "service_connect_enabled" {
+  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
+  type        = bool
+  default     = false
+}
+
+variable "service_name" {
+  description = "The service name for the application."
+  type        = string
+  default     = "nomad-autoscaler"
+}
+
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the application."
+  type        = list(string)
+  default     = []
+}
+
+variable "service_upstreams" {
   description = ""
   type = list(object({
     name = string

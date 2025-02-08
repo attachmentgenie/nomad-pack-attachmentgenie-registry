@@ -128,8 +128,16 @@ variable "volume_type" {
   default     = "host"
 }
 
-variable "version_tag" {
-  description = "The docker image version. For options, see https://quay.io/repository/minio/minio"
-  type        = string
-  default     = "latest"
+variable "task" {
+  description = "Details configuration options for the minio task."
+  type = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "quay.io/minio/minio",
+    version = "latest",
+  }
 }

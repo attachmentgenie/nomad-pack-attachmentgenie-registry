@@ -1,38 +1,40 @@
 job [[ template "job_name" . ]] {
   [[ template "placement" . ]]
   group "autoscaler" {
-    count = [[ var "autoscaler_agent_task.count" . ]]
+    count = [[ var "app_count" . ]]
 
     network {
       [[- if var "autoscaler_agent_task_service.enabled" . ]]
       mode = "bridge"
       [[ end ]]
-      port [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]] {
+      port "http" {
         to = 8080
       }
     }
 
-    [[- if var "autoscaler_agent_task_service.enabled" . ]]
+    [[ if var "register_service" . ]]
     service {
-      name     = [[ var "autoscaler_agent_task_service.service_name" . | quote ]]
-      port     = [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]]
-      provider = [[ var "autoscaler_agent_task_service.service_provider" . | quote ]]
-      tags     = [[ var "autoscaler_agent_task_service.service_tags" . | toStringList ]]
+      name     = "[[ var "service_name" . ]]"
+      provider = "[[ var "service_provider" . ]]"
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
+      port     = "http"
+      [[ if var "service_connect_enabled" . ]]
 
       check {
-        type     = [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]]
+        type     = "http"
         path     = "/v1/health"
-        interval = [[ var "autoscaler_agent_task_service.check_interval" . | quote ]]
-        timeout  = [[ var "autoscaler_agent_task_service.check_timeout" . | quote ]]
+        interval = "3s"
+        timeout  = "1s"
       }
 
-      [[- if var "autoscaler_agent_task_service.connect_enabled" . ]]
       connect {
         sidecar_service {
           tags = [""]
           proxy {
             local_service_port = 8080
-            [[ range $upstream := var "autoscaler_agent_task_upstreams" . ]]
+            [[ range $upstream := var "service_upstreams" . ]]
             upstreams {
               destination_name = [[ $upstream.name | quote ]]
               local_bind_port  = [[ $upstream.port ]]
@@ -46,17 +48,19 @@ job [[ template "job_name" . ]] {
     [[- end ]]
 
     task "autoscaler_agent" {
-      driver = [[ var "autoscaler_agent_task.driver" . | quote ]]
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image   = "hashicorp/nomad-autoscaler:[[ var "autoscaler_agent_task.version" . ]]"
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         command = "nomad-autoscaler"
-        ports   = [ [[ var "autoscaler_agent_network.autoscaler_http_port_label" . | quote ]] ]
+        ports   = ["http"]
         args    = [[ template "full_args" . ]]
       }
 
-      [[- if var "autoscaler_agent_task.config_files" . ]]
-      [[ range $idx, $file := var "autoscaler_agent_task.config_files" . ]]
+      [[ template "artifacts" . ]]
+
+      [[- if var "task.config_files" . ]]
+      [[ range $idx, $file := var "task.config_files" . ]]
       template {
         data = <<EOF
 [[ fileContents $file ]]
@@ -67,8 +71,8 @@ job [[ template "job_name" . ]] {
       [[ end ]]
       [[- end ]]
 
-      [[- if var "autoscaler_agent_task.scaling_policy_files" . -]]
-      [[ range $idx, $file := var "autoscaler_agent_task.scaling_policy_files" . ]]
+      [[- if var "task.scaling_policy_files" . -]]
+      [[ range $idx, $file := var "task.scaling_policy_files" . ]]
       template {
         data = <<EOF
 [[ fileContents $file ]]

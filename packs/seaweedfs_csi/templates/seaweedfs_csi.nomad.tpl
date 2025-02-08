@@ -3,9 +3,9 @@ job [[ template "job_name" . ]] {
   type = "system"
   group "nodes" {
     task "plugin" {
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
       config {
-        image        = "[[ var "image_name" . ]]:[[ var "image_tag" . ]]"
+        image        = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         network_mode = "host"
         args         = [[ var "cli_args" . | toPrettyJson ]]
         privileged   = true

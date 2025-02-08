@@ -63,7 +63,7 @@ variable "task_resources" {
   }
 }
 
-variable "task_config" {
+variable "task" {
   description = "Options for the task"
   type = object({
     image                  = string
@@ -80,7 +80,7 @@ variable "task_config" {
 variable "env_vars" {
   type        = map(string)
   description = "Environment variables to pass to Docker container."
-  default     = {
+  default = {
     "NOMAD_EVENTS_SINK_app__data_dir" : "/alloc/data/",
     "NOMAD_ADDR" : "http://$${attr.nomad.advertise.address}",
   }

@@ -43,10 +43,10 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image = "mysql:[[ var "version_tag" . ]]"
+        image = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         ports = ["mysql"]
       }
 

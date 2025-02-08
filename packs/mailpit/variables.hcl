@@ -94,7 +94,7 @@ variable "env_vars" {
 }
 
 variable "task" {
-  description = "Details configuration options for the promlens task."
+  description = "Details configuration options for the mailpit task."
   type = object({
     driver  = string
     image   = string

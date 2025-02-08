@@ -88,7 +88,7 @@ variable "service_tags" {
 }
 
 variable "task" {
-  description = "Details configuration options for the promlens task."
+  description = "Details configuration options for the example task."
   type = object({
     driver  = string
     image   = string

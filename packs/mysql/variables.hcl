@@ -101,8 +101,16 @@ variable "env_vars" {
   }
 }
 
-variable "version_tag" {
-  description = "The docker image version. For options, see https://hub.docker.com/_/mysql"
-  type        = string
-  default     = "latest"
+variable "task" {
+  description = "Details configuration options for the mysql task."
+  type = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "mysql",
+    version = "latest",
+  }
 }

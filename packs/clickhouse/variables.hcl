@@ -1,8 +1,8 @@
 variable "job_name" {
+  # If "", the pack name will be used
   description = "The name to use as the job name which overrides using the pack name"
   type        = string
-  // If "", the pack name will be used
-  default = ""
+  default     = ""
 }
 
 variable "region" {
@@ -17,52 +17,6 @@ variable "datacenters" {
   default     = ["*"]
 }
 
-variable "namespace" {
-  description = "The namespace where the job should be placed."
-  type        = string
-  default     = "default"
-}
-
-variable "node_pool" {
-  description = "The node_pool where the job should be placed."
-  type        = string
-  default     = "default"
-}
-
-variable "priority" {
-  description = "The priority value the job will be given"
-  type        = number
-  default     = 50
-}
-
-variable "task_constraints" {
-  description = "Constraints to apply to the entire job."
-  type = list(object({
-    attribute = string
-    operator  = string
-    value     = string
-  }))
-  default = [
-    {
-      attribute = "$${attr.kernel.name}",
-      value     = "(linux|darwin)",
-      operator  = "regexp",
-    },
-  ]
-}
-
-variable "task_resources" {
-  description = "The resources to assign to the OpenTelemetry Collector task."
-  type = object({
-    cpu    = number
-    memory = number
-  })
-  default = {
-    cpu    = 256
-    memory = 512
-  }
-}
-
 variable "app_count" {
   description = "Number of instances to deploy"
   type        = number
@@ -70,7 +24,7 @@ variable "app_count" {
 }
 
 variable "register_service" {
-  description = "If you want to register a service for the job."
+  description = "If you want to register a service for the job"
   type        = bool
   default     = false
 }
@@ -84,7 +38,7 @@ variable "service_connect_enabled" {
 variable "service_name" {
   description = "The service name for the application."
   type        = string
-  default     = "pgsql"
+  default     = "clickhouse"
 }
 
 variable "service_provider" {
@@ -98,17 +52,8 @@ variable "service_tags" {
   type        = list(string)
   default     = []
 }
-
-variable "env_vars" {
-  type        = map(string)
-  description = "Environment variables to pass to Docker container."
-  default = {
-    "POSTGRES_PASSWORD" : "dr0wss@pt3rc3syM",
-  }
-}
-
 variable "task" {
-  description = "Details configuration options for the pgsql task."
+  description = "Details configuration options for the clickhouse task."
   type = object({
     driver  = string
     image   = string
@@ -116,7 +61,7 @@ variable "task" {
   })
   default = {
     driver  = "docker",
-    image   = "postgres",
+    image   = "clickhouse",
     version = "latest",
   }
 }

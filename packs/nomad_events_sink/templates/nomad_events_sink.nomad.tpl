@@ -17,7 +17,7 @@ job [[ template "job_name" . ]] {
     task [[ template "job_name" . ]] {
       driver = "docker"
       config {
-        image = "[[ var "task_config.image" . ]]:[[ var "task_config.version" . ]]"
+        image = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         [[- if var "task_config.nomad_events_sink_toml" . ]]
         volumes = [
           "local/config:/config",

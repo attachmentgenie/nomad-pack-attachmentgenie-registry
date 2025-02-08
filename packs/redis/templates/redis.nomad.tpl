@@ -62,10 +62,10 @@ job [[ template "job_name" . ]] {
     [[ template "volume" . ]]
 
     task "redis" {
-      driver = "docker"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image = [[ var "image" . | quote ]]
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
       }
 
       [[ template "resources" . ]]

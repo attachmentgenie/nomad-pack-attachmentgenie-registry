@@ -46,10 +46,10 @@ job [[ template "job_name" . ]] {
     }
 
     task "server" {
-      driver = "[[ var "pgsql_task.driver" . ]]"
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image   = "[[ var "pgsql_task.image" . ]]:[[ var "pgsql_task.version" . ]]"
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         ports   = ["pgsql"]
       }
 

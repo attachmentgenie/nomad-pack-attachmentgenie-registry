@@ -150,11 +150,18 @@ variable "restart_attempts" {
   default     = 2
 }
 
-// Redis Task-Level Variables
-variable "image" {
-  description = "Redis Docker image."
-  type        = string
-  default     = "redis:latest"
+variable "task" {
+  description = "Details configuration options for the redis task."
+  type = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "redis",
+    version = "latest",
+  }
 }
 
 variable "volume_access_mode" {

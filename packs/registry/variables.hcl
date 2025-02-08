@@ -139,7 +139,7 @@ EOH
 }
 
 variable "registry_task" {
-  description = "Details configuration options for the promlens task."
+  description = "Details configuration options for the registry task."
   type = object({
     driver  = string
     image   = string
@@ -163,7 +163,7 @@ variable "env_vars" {
 }
 
 variable "ui_task" {
-  description = "Details configuration options for the promlens task."
+  description = "Details configuration options for the ui task."
   type = object({
     driver  = string
     expose  = bool

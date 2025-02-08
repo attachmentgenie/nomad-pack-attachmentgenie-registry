@@ -81,6 +81,18 @@ variable "service_name" {
   default     = "nomad-logger"
 }
 
+variable "service_provider" {
+  description = "Specifies the service registration provider to use for service registrations."
+  type        = string
+  default     = "consul"
+}
+
+variable "service_tags" {
+  description = "The service name for the atc application"
+  type        = list(string)
+  default     = []
+}
+
 variable "task" {
   description = "Options for the task"
   type = object({
@@ -91,12 +103,6 @@ variable "task" {
     image   = "attachmentgenie/nomad-logger"
     version = "latest"
   }
-}
-
-variable "task_service_tags" {
-  description = "The service name for the nomad logger application"
-  type        = list(string)
-  default     = []
 }
 
 variable "volume_name" {
@@ -114,7 +120,7 @@ variable "volume_type" {
 variable "env_vars" {
   type        = map(string)
   description = "Environment variables to pass to Docker container."
-  default     = {
+  default = {
     "NOMAD_ADDR" : "http://$${attr.nomad.advertise.address}",
   }
 }

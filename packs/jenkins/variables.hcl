@@ -73,16 +73,18 @@ variable "jasc_config" {
   type        = string
 }
 
-variable "image_name" {
-  description = "The docker image name."
-  type        = string
-  default     = "jenkins/jenkins"
-}
-
-variable "image_tag" {
-  description = "The docker image tag."
-  type        = string
-  default     = "lts-jdk21"
+variable "task" {
+  description = "Details configuration options for the atc task."
+  type = object({
+    driver  = string
+    image   = string
+    version = string
+  })
+  default = {
+    driver  = "docker",
+    image   = "jenkins/jenkins",
+    version = "latest",
+  }
 }
 
 variable "register_service" {

@@ -15,4 +15,3 @@ An events collection agent which processes Nomad Events and dumps to external si
 - `namespace` (string "default") - The namespace where the job should be placed.
 - `priority` (number ["50"]) - The job priority
 - `constraints` (list(object)) - Constraints to apply to the entire job.
-- `task_config` (object) - Options for the nomad-events-sink task.

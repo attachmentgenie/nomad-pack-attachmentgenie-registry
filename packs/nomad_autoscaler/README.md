@@ -13,7 +13,7 @@ task placement.
 - `autoscaler_agent_network` (object) - The Nomad Autoscaler network configuration options.
   * `autoscaler_http_port_label` (string "http") - The label name to use for the Nomad Autoscaler
 HTTP API.
-- `autoscaler_agent_task` (object) - Details configuration options for the Nomad Autoscaler agent task.
+- `task` (object) - Details configuration options for the Nomad Autoscaler agent task.
   * `driver` (string "docker") - The Nomad driver to use when running the task. Supports `docker` and `exec`.
   * `version` (string "0.3.3") - The Nomad Autoscaler version to deploy.
   * `additional_cli_args` (list(string) []) - A list of CLI arguments that will be passed to the

@@ -7,7 +7,9 @@ See the [documentation on Writing Packs and Registries](https://github.com/hashi
 This registry current holds packs for the following tools
 
 * Atc
+* Clickhouse
 * Example
+* Heimdall
 * Jenkins  (fork from community registry)
 * Mailpit
 * Minio
