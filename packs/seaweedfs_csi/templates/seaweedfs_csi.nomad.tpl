@@ -7,7 +7,7 @@ job [[ template "job_name" . ]] {
       config {
         image        = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         network_mode = "host"
-        args         = [[ var "cli_args" . | toPrettyJson ]]
+        args         = [[ var "additional_cli_args" . | toPrettyJson ]]
         privileged   = true
       }
 

@@ -77,7 +77,7 @@ variable "task" {
   }
 }
 
-variable "cli_args" {
+variable "additional_cli_args" {
   description = "cli arguments to pass to the csi driver"
   type        = list(string)
   default = [
