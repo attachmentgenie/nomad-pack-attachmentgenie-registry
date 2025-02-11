@@ -4,6 +4,12 @@ variable "job_name" {
   type        = string
   default     = ""
 }
+variable "job_name" {
+  description = "The name to use as the job name which overrides using the pack name"
+  type        = string
+  // If "", the pack name will be used
+  default = ""
+}
 
 variable "region" {
   description = "The region where jobs will be deployed"
@@ -17,10 +23,50 @@ variable "datacenters" {
   default     = ["*"]
 }
 
-variable "app_count" {
-  description = "Number of instances to deploy"
+variable "namespace" {
+  description = "The namespace where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "node_pool" {
+  description = "The node_pool where the job should be placed."
+  type        = string
+  default     = "default"
+}
+
+variable "priority" {
+  description = "The priority value the job will be given"
   type        = number
-  default     = 1
+  default     = 50
+}
+
+variable "task_constraints" {
+  description = "Constraints to apply to the entire job."
+  type = list(object({
+    attribute = string
+    operator  = string
+    value     = string
+  }))
+  default = [
+    {
+      attribute = "$${attr.kernel.name}",
+      value     = "(linux|darwin)",
+      operator  = "regexp",
+    },
+  ]
+}
+
+variable "task_resources" {
+  description = "Resources used by jenkins task."
+  type = object({
+    cpu    = number
+    memory = number
+  })
+  default = {
+    cpu    = 1000,
+    memory = 1024,
+  }
 }
 
 variable "register_service" {
@@ -29,14 +75,8 @@ variable "register_service" {
   default     = false
 }
 
-variable "service_connect_enabled" {
-  description = "If this service will announce itself to the service mesh. Only valid is 'service_provider == 'consul' "
-  type        = bool
-  default     = false
-}
-
 variable "service_name" {
-  description = "The service name for the application."
+  description = "The service name for the clickhouse application"
   type        = string
   default     = "clickhouse"
 }
@@ -48,10 +88,11 @@ variable "service_provider" {
 }
 
 variable "service_tags" {
-  description = "The service name for the application."
+  description = "The service name for the clickhouse application"
   type        = list(string)
   default     = []
 }
+
 variable "task" {
   description = "Details configuration options for the clickhouse task."
   type = object({
@@ -64,4 +105,27 @@ variable "task" {
     image   = "clickhouse",
     version = "latest",
   }
+}
+
+variable "volume_access_mode" {
+  description = "Defines whether a volume should be available concurrently."
+  type        = string
+  default     = "multi-node-multi-writer"
+}
+
+variable "volume_attachment_mode" {
+  description = "The storage API that will be used by the volume."
+  type        = string
+  default     = "file-system"
+}
+
+variable "volume_name" {
+  description = "The name of the volume you want Jenkins to use."
+  type        = string
+}
+
+variable "volume_type" {
+  description = "The type of the volume you want Jenkins to use."
+  type        = string
+  default     = "host"
 }

@@ -58,7 +58,7 @@ variable "task_resources" {
     memory = number
   })
   default = {
-    cpu    = 200,
+    cpu    = 256,
     memory = 256,
   }
 }

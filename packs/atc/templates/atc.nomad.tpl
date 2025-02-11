@@ -48,6 +48,7 @@ job [[ template "job_name" . ]] {
         image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         ports = ["http"]
       }
-    }
+
+      [[ template "resources" . ]]
   }
 }

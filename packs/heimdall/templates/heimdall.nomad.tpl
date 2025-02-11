@@ -53,6 +53,8 @@ job [[ template "job_name" . ]] {
 
       [[ template "env_upper" . ]]
 
+      [[ template "resources" . ]]
+
       [[ if var "volume_name" . ]]
       volume_mount {
         volume      = "[[ var "volume_name" . ]]"
