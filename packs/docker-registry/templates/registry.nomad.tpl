@@ -1,7 +1,9 @@
 job [[ template "job_name" . ]] {
   [[ template "placement" . ]]
+  type = "service"
 
-  group "registry" {
+  group [[ template "job_name" . ]] {
+
     network {
       [[ if var "register_service" . ]]
       [[  $service_provider := var "service_provider" . ]]
@@ -12,33 +14,18 @@ job [[ template "job_name" . ]] {
       port "http" {
         to = 5000
       }
-      [[ if var "ui_task.expose" . ]]
-      port "ui" {
-        to = 80
-      }
-      [[ end ]]
     }
 
     [[ if var "register_service" . ]]
     service {
-      name     = "[[ var "registry_service_name" . ]]"
+      name     = "[[ var "service_name" . ]]"
       provider = "[[ var "service_provider" . ]]"
-      tags     = [[ var "registry_service_tags" . | toStringList ]]
+      [[ range $tag := var "service_tags" . ]]
+      tags     = [[ var "service_tags" . | toStringList ]]
+      [[ end ]]
       port     = "http"
       check {
-        type     = "http"
-        path     = "/"
-        interval = "10s"
-        timeout  = "2s"
-      }
-    }
-    
-    service {
-      name     = "[[ var "ui_service_name" . ]]"
-      provider = "[[ var "service_provider" . ]]"
-      tags     = [[ var "ui_service_tags" . | toStringList ]]
-      port     = "ui"
-      check {
+        name     = "alive"
         type     = "http"
         path     = "/"
         interval = "10s"
@@ -56,11 +43,11 @@ job [[ template "job_name" . ]] {
       mode = "fail"
     }
 
-    task "store" {
-      driver = "[[ var "registry_task.driver" . ]]"
+    task "server" {
+      driver = "[[ var "task.driver" . ]]"
 
       config {
-        image   = "[[ var "registry_task.image" . ]]:[[ var "registry_task.version" . ]]"
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
         ports = ["http"]
         volumes = [
           "local/config/registry.yaml:/etc/docker/registry/config.yml",
@@ -79,27 +66,12 @@ job [[ template "job_name" . ]] {
 
       template {
         data = <<EOF
-[[ var "registry_config" . ]]
+[[ var "config" . ]]
 EOF
         change_mode   = "signal"
         change_signal = "SIGHUP"
         destination   = "local/config/registry.yaml"
       }
     }
-
-    [[ if var "ui_task.expose" . ]]
-    task "ui" {
-      driver = "[[ var "ui_task.driver" . ]]"
-
-      config {
-        image   = "[[ var "ui_task.image" . ]]:[[ var "ui_task.version" . ]]"
-        ports = ["ui"]
-      }
-
-      [[ template "env_upper" . ]]
-
-      [[ template "resources" . ]]
-    }
-    [[ end ]]
   }
 }

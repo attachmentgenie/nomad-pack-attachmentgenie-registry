@@ -12,10 +12,7 @@ job [[ template "job_name" . ]] {
       [[ end ]]
       [[ end ]]
       port "http" {
-        to = 8123
-      }
-      port "native" {
-        to = 9000
+        to = 5521
       }
     }
 
@@ -26,29 +23,16 @@ job [[ template "job_name" . ]] {
       [[ range $tag := var "service_tags" . ]]
       tags     = [[ var "service_tags" . | toStringList ]]
       [[ end ]]
-      port = "http"
+      port     = "http"
       check {
         name     = "alive"
         type     = "http"
-        path     = "/ping"
+        path     = "/health"
         interval = "10s"
         timeout  = "2s"
       }
     }
     [[ end ]]
-
-    [[ if var "register_service" . ]]
-    service {
-      name     = "[[ var "service_name" . ]]-native"
-      provider = "[[ var "service_provider" . ]]"
-      [[ range $tag := var "service_tags" . ]]
-      tags     = [[ var "service_tags" . | toStringList ]]
-      [[ end ]]
-      port = "native"
-    }
-    [[ end ]]
-
-    [[ template "volume" . ]]
 
     restart {
       attempts = 2
@@ -61,21 +45,13 @@ job [[ template "job_name" . ]] {
       driver = "[[ var "task.driver" . ]]"
 
       config {
-        image = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
-        ports = ["http","native"]
+        image   = "[[ var "task.image" . ]]:[[ var "task.version" . ]]"
+        ports = ["http"]
       }
 
       [[ template "env_upper" . ]]
 
       [[ template "resources" . ]]
-
-      [[ if var "volume_name" . ]]
-      volume_mount {
-        volume      = "[[ var "volume_name" . ]]"
-        destination = "/var/lib/clickhouse/"
-        read_only   = false
-      }
-      [[- end ]]
     }
   }
 }

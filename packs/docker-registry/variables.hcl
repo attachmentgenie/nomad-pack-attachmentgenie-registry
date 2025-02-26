@@ -59,7 +59,7 @@ variable "task_resources" {
   })
   default = {
     cpu    = 256,
-    memory = 256,
+    memory = 512,
   }
 }
 
@@ -75,26 +75,14 @@ variable "service_provider" {
   default     = "consul"
 }
 
-variable "registry_service_name" {
-  description = "The service name for the registry application"
+variable "service_name" {
+  description = "The service name for the docker registry application"
   type        = string
   default     = "registry"
 }
 
-variable "ui_service_name" {
-  description = "The service name for the registry application"
-  type        = string
-  default     = "images"
-}
-
-variable "registry_service_tags" {
-  description = "The service name for the registry application"
-  type        = list(string)
-  default     = []
-}
-
-variable "ui_service_tags" {
-  description = "The service name for the registry application"
+variable "service_tags" {
+  description = "The service name for the docker registry application"
   type        = list(string)
   default     = []
 }
@@ -122,8 +110,8 @@ variable "volume_type" {
   default     = "host"
 }
 
-variable "registry_config" {
-  description = "The yaml configuration for the registry"
+variable "config" {
+  description = "The yaml configuration for the docker registry"
   type        = string
   default     = <<EOH
 ---
@@ -138,8 +126,8 @@ storage:
 EOH
 }
 
-variable "registry_task" {
-  description = "Details configuration options for the registry task."
+variable "task" {
+  description = "Details configuration options for the docker registry task."
   type = object({
     driver  = string
     image   = string
@@ -148,32 +136,6 @@ variable "registry_task" {
   default = {
     driver  = "docker",
     image   = "registry",
-    version = "latest",
-  }
-}
-
-variable "env_vars" {
-  description = "Environment variables to pass to Docker container."
-  type        = map(string)
-  default = {
-    "REGISTRY_URL" : "http://$${NOMAD_HOST_ADDR_http}",
-    "DELETE_IMAGES" : true,
-    "SINGLE_REGISTRY" : true,
-  }
-}
-
-variable "ui_task" {
-  description = "Details configuration options for the ui task."
-  type = object({
-    driver  = string
-    expose  = bool
-    image   = string
-    version = string
-  })
-  default = {
-    driver  = "docker",
-    expose  = true,
-    image   = "joxit/docker-registry-ui",
     version = "latest",
   }
 }

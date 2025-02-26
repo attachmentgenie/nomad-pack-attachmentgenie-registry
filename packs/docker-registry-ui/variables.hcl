@@ -1,10 +1,4 @@
 variable "job_name" {
-  # If "", the pack name will be used
-  description = "The name to use as the job name which overrides using the pack name"
-  type        = string
-  default     = ""
-}
-variable "job_name" {
   description = "The name to use as the job name which overrides using the pack name"
   type        = string
   // If "", the pack name will be used
@@ -76,9 +70,9 @@ variable "register_service" {
 }
 
 variable "service_name" {
-  description = "The service name for the clickhouse application"
+  description = "The service name for the docker-registry-ui application"
   type        = string
-  default     = "clickhouse"
+  default     = "docker-registry-ui"
 }
 
 variable "service_provider" {
@@ -88,13 +82,13 @@ variable "service_provider" {
 }
 
 variable "service_tags" {
-  description = "The service name for the clickhouse application"
+  description = "The service name for the docker-registry-ui application"
   type        = list(string)
   default     = []
 }
 
 variable "task" {
-  description = "Details configuration options for the clickhouse task."
+  description = "Details configuration options for the docker-registry-ui task."
   type = object({
     driver  = string
     image   = string
@@ -102,36 +96,17 @@ variable "task" {
   })
   default = {
     driver  = "docker",
-    image   = "clickhouse",
+    image   = "joxit/docker-registry-ui",
     version = "latest",
   }
 }
 
 variable "env_vars" {
-  type        = map(string)
   description = "Environment variables to pass to Docker container."
-  default     = {}
-}
-
-variable "volume_access_mode" {
-  description = "Defines whether a volume should be available concurrently."
-  type        = string
-  default     = "multi-node-multi-writer"
-}
-
-variable "volume_attachment_mode" {
-  description = "The storage API that will be used by the volume."
-  type        = string
-  default     = "file-system"
-}
-
-variable "volume_name" {
-  description = "The name of the volume you want Jenkins to use."
-  type        = string
-}
-
-variable "volume_type" {
-  description = "The type of the volume you want Jenkins to use."
-  type        = string
-  default     = "host"
+  type        = map(string)
+  default = {
+    "REGISTRY_URL" : "http://$${NOMAD_HOST_ADDR_http}",
+    "DELETE_IMAGES" : true,
+    "SINGLE_REGISTRY" : true,
+  }
 }
