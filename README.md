@@ -25,6 +25,7 @@ This registry current holds packs for the following tools
 * [Postgresql](./packs/pgsql/README.md)
 * [Redis](./packs/redis/README.md)  (fork from community registry)
 * [Seaweedfs CSI Driver](./packs/seaweedfs_csi/README.md)
+* [Temporal](./packs/temporal/README.md)
 
 ## Deploy packs from this nomad-pack registry
 
