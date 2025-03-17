@@ -7,6 +7,7 @@ See the [documentation on Writing Packs and Registries](https://github.com/hashi
 This registry current holds packs for the following tools
 
 * [Atc](./packs/atc/README.md)
+* [Atlantis](./packs/atlantis/README.md)
 * [Clickhouse UI](./packs/clickhouse-ui/README.md)
 * [Clickhouse](./packs/clickhouse/README.md)
 * [Docker Registry](./packs/docker-registry/README.md)
