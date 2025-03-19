@@ -24,7 +24,7 @@ This registry current holds packs for the following tools
 * [Nomad Logger](./packs/nomad_logger/README.md)
 * [Opensearch](./packs/opensearch/README.md)
 * [Postgresql](./packs/pgsql/README.md)
-* [Redis](./packs/redis/README.md)  (fork from community registry)
+* [Valkey](./packs/valkey/README.md)
 * [Seaweedfs CSI Driver](./packs/seaweedfs_csi/README.md)
 
 ## Deploy packs from this nomad-pack registry

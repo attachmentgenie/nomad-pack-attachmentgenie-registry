@@ -2,7 +2,7 @@ job [[ template "job_name" . ]] {
   [[ template "placement" . ]]
   type = "service"
 
-  group "redis" {
+  group "valkey" {
     count = [[ var "app_count" . ]]
 
     network {
@@ -32,7 +32,7 @@ job [[ template "job_name" . ]] {
       tags     = [[ var "consul_tags" . | toStringList ]]
       [[- if .my.has_health_check ]]
       check {
-        name     = "redis"
+        name     = "valkey"
         type     = "tcp"
         port     = [[ var "health_check.port" . ]]
         interval = [[ var "health_check.interval" . | quote ]]
@@ -61,7 +61,7 @@ job [[ template "job_name" . ]] {
 
     [[ template "volume" . ]]
 
-    task "redis" {
+    task "valkey" {
       driver = "[[ var "task.driver" . ]]"
 
       config {
@@ -72,7 +72,7 @@ job [[ template "job_name" . ]] {
 
       [[ if var "volume_name" . ]]
       volume_mount {
-        volume      = "redis"
+        volume      = "valkey"
         destination = "/data"
         read_only   = false
       }

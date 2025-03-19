@@ -1,10 +1,10 @@
 app {
-  url = "https://github.com/redis/redis"
+  url = "https://valkey.io/"
 }
 
 pack {
-  name        = "redis"
-  description = "Redis - Open-source, networked, in-memory, key-value data store -- STANDALONE INSTANCE"
+  name        = "Valkey"
+  description = "Valkey is an open source (BSD) high-performance key/value datastore"
   version     = "0.2.0"
 }
 

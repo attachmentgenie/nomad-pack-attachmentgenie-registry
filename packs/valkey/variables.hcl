@@ -69,7 +69,7 @@ variable "app_count" {
   default     = 1
 }
 
-// Redis Group-Level Variables
+// Valkey Group-Level Variables
 variable "update" {
   description = "Job update parameters"
   type = object({
@@ -101,7 +101,7 @@ variable "service_connect_enabled" {
 variable "service_name" {
   description = "Name used by Consul, if registering the job in Consul"
   type        = string
-  default     = "redis"
+  default     = "valkey"
 }
 
 variable "service_port" {
@@ -151,7 +151,7 @@ variable "restart_attempts" {
 }
 
 variable "task" {
-  description = "Details configuration options for the redis task."
+  description = "Details configuration options for the valkey task."
   type = object({
     driver  = string
     image   = string
@@ -159,7 +159,7 @@ variable "task" {
   })
   default = {
     driver  = "docker",
-    image   = "redis",
+    image   = "valkey/valkey",
     version = "latest",
   }
 }
