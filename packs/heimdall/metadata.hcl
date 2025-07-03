@@ -5,7 +5,7 @@ app {
 pack {
   name        = "heimdall"
   description = "Heimdall Application Dashboard is a dashboard for all your web applications."
-  version     = "0.1.0"
+  version     = "0.2.0"
 }
 
 dependency "attachmentgenie_pack_helpers" {
