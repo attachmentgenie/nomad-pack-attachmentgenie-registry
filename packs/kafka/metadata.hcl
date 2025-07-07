@@ -1,10 +1,10 @@
 app {
-  url = "https://clickhouse.com/"
+  url = "https://kafka.apache.org/"
 }
 
 pack {
-  name        = "clickhouse"
-  description = "ClickHouse is an open-source column-oriented DBMS (columnar database management system) for online analytical processing."
+  name        = "kafka"
+  description = "Apache Kafka is an open-source distributed event streaming platform"
   version     = "0.2.0"
 }
 
